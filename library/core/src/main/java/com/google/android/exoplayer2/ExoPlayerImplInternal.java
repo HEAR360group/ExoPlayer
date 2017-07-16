@@ -148,6 +148,8 @@ import java.io.IOException;
   private PlaybackParameters playbackParameters;
   private Renderer rendererMediaClockSource;
   private MediaClock rendererMediaClock;
+  private Renderer[] rendererMediaClockSources;
+  private MediaClock[] rendererMediaClocks;
   private MediaSource mediaSource;
   private Renderer[] enabledRenderers;
   private boolean released;
@@ -188,6 +190,8 @@ import java.io.IOException;
     }
     standaloneMediaClock = new StandaloneMediaClock();
     enabledRenderers = new Renderer[0];
+    rendererMediaClockSources = new Renderer[0];
+    rendererMediaClocks = new MediaClock[0];
     window = new Timeline.Window();
     period = new Timeline.Period();
     trackSelector.init(this);
@@ -635,6 +639,8 @@ import java.io.IOException;
         renderer.disable();
       }
       enabledRenderers = new Renderer[0];
+      rendererMediaClockSources = new Renderer[0];
+      rendererMediaClocks = new MediaClock[0];
       rendererMediaClock = null;
       rendererMediaClockSource = null;
       playingPeriodHolder = null;
@@ -713,6 +719,8 @@ import java.io.IOException;
       }
     }
     enabledRenderers = new Renderer[0];
+    rendererMediaClockSources = new Renderer[0];
+    rendererMediaClocks = new MediaClock[0];
     releasePeriodHoldersFrom(playingPeriodHolder != null ? playingPeriodHolder
         : loadingPeriodHolder);
     loadingPeriodHolder = null;
@@ -1408,10 +1416,13 @@ import java.io.IOException;
               rendererPositionUs, joining, playingPeriodHolder.getRendererOffset());
           MediaClock mediaClock = renderer.getMediaClock();
           if (mediaClock != null) {
+            //Comment out this exception to be able to have multiple audio renderers (Hear360)
+            /*
             if (rendererMediaClock != null) {
               throw ExoPlaybackException.createForUnexpected(
                   new IllegalStateException("Multiple renderer media clocks enabled."));
             }
+            */
             rendererMediaClock = mediaClock;
             rendererMediaClockSource = renderer;
             rendererMediaClock.setPlaybackParameters(playbackParameters);

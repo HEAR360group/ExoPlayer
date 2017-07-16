@@ -334,6 +334,10 @@ public class MediaCodecAudioRenderer extends MediaCodecRenderer implements Media
     return audioTrack.hasPendingData() || super.isReady();
   }
 
+  public void setPositionUs(long positionUs) {
+    
+  }
+
   @Override
   public long getPositionUs() {
     long newCurrentPositionUs = audioTrack.getCurrentPositionUs(isEnded());

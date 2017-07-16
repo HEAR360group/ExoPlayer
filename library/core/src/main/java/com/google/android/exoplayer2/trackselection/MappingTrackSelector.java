@@ -263,20 +263,61 @@ public abstract class MappingTrackSelector extends TrackSelector {
     // Determine the extent to which each renderer supports mixed mimeType adaptation.
     int[] mixedMimeTypeAdaptationSupport = getMixedMimeTypeAdaptationSupport(rendererCapabilities);
 
-    // Associate each track group to a preferred renderer, and evaluate the support that the
+// Associate each track group to a preferred renderer, and evaluate the support that the
     // renderer provides for each track in the group.
-    for (int groupIndex = 0; groupIndex < trackGroups.length; groupIndex++) {
-      TrackGroup group = trackGroups.get(groupIndex);
-      // Associate the group to a preferred renderer.
-      int rendererIndex = findRenderer(rendererCapabilities, group);
-      // Evaluate the support that the renderer provides for each track in the group.
-      int[] rendererFormatSupport = rendererIndex == rendererCapabilities.length
-          ? new int[group.length] : getFormatSupport(rendererCapabilities[rendererIndex], group);
-      // Stash the results.
-      int rendererTrackGroupCount = rendererTrackGroupCounts[rendererIndex];
-      rendererTrackGroups[rendererIndex][rendererTrackGroupCount] = group;
-      rendererFormatSupports[rendererIndex][rendererTrackGroupCount] = rendererFormatSupport;
-      rendererTrackGroupCounts[rendererIndex]++;
+    if(trackGroups.length == 5) //Hard coded 8 Ball scenario (Hear360)
+    {
+      for (int groupIndex = 0; groupIndex < trackGroups.length; groupIndex++) {
+        TrackGroup group = trackGroups.get(groupIndex);
+        // Associate the group to a preferred renderer.
+        int rendererIndex = groupIndex; //1st is the video track, and the rest 4 are audio tracks
+        // Evaluate the support that the renderer provides for each track in the group.
+        int[] rendererFormatSupport = rendererIndex == rendererCapabilities.length
+                ? new int[group.length] : getFormatSupport(rendererCapabilities[rendererIndex], group);
+        // Stash the results.
+        int rendererTrackGroupCount = rendererTrackGroupCounts[rendererIndex];
+        rendererTrackGroups[rendererIndex][rendererTrackGroupCount] = group;
+        rendererFormatSupports[rendererIndex][rendererTrackGroupCount] = rendererFormatSupport;
+        rendererTrackGroupCounts[rendererIndex]++;
+      }
+    }
+    else {
+      int audioTrackCount = 0;
+      // Associate each track group to a preferred renderer, and evaluate the support that the
+      // renderer provides for each track in the group.
+      for (int groupIndex = 0; groupIndex < trackGroups.length; groupIndex++) {
+        TrackGroup group = trackGroups.get(groupIndex);
+        // Associate the group to a preferred renderer.
+        int rendererIndex = findRenderer(rendererCapabilities, group);
+        if(rendererIndex == 1)
+        {
+          if(group.getFormat(0).id.equals("front"))
+          {
+            rendererIndex = 1;
+          }
+          else if(group.getFormat(0).id.equals("left"))
+          {
+            rendererIndex = 2;
+          }
+          else if(group.getFormat(0).id.equals("back"))
+          {
+            rendererIndex = 3;
+          }
+          else if(group.getFormat(0).id.equals("right"))
+          {
+            rendererIndex = 4;
+          }
+          //rendererIndex = ++audioTrackCount;
+        }
+        // Evaluate the support that the renderer provides for each track in the group.
+        int[] rendererFormatSupport = rendererIndex == rendererCapabilities.length
+                ? new int[group.length] : getFormatSupport(rendererCapabilities[rendererIndex], group);
+        // Stash the results.
+        int rendererTrackGroupCount = rendererTrackGroupCounts[rendererIndex];
+        rendererTrackGroups[rendererIndex][rendererTrackGroupCount] = group;
+        rendererFormatSupports[rendererIndex][rendererTrackGroupCount] = rendererFormatSupport;
+        rendererTrackGroupCounts[rendererIndex]++;
+      }
     }
 
     // Create a track group array for each renderer, and trim each rendererFormatSupports entry.

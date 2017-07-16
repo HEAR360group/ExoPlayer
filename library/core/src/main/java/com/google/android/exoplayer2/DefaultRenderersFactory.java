@@ -142,8 +142,20 @@ public class DefaultRenderersFactory implements RenderersFactory {
     ArrayList<Renderer> renderersList = new ArrayList<>();
     buildVideoRenderers(context, drmSessionManager, allowedVideoJoiningTimeMs,
         eventHandler, videoRendererEventListener, extensionRendererMode, renderersList);
-    buildAudioRenderers(context, drmSessionManager, buildAudioProcessors(),
+
+    AudioProcessor[] a = buildAudioProcessors(0);
+    buildAudioRenderers(context, drmSessionManager, a,
         eventHandler, audioRendererEventListener, extensionRendererMode, renderersList);
+    AudioProcessor[] b = buildAudioProcessors(0);
+    buildAudioRenderers(context, drmSessionManager, a,
+            eventHandler, audioRendererEventListener, extensionRendererMode, renderersList);
+    AudioProcessor[] c = buildAudioProcessors(0);
+    buildAudioRenderers(context, drmSessionManager, a,
+            eventHandler, audioRendererEventListener, extensionRendererMode, renderersList);
+    AudioProcessor[] d = buildAudioProcessors(0);
+    buildAudioRenderers(context, drmSessionManager, a,
+            eventHandler, audioRendererEventListener, extensionRendererMode, renderersList);
+
     buildTextRenderers(context, textRendererOutput, eventHandler.getLooper(),
         extensionRendererMode, renderersList);
     buildMetadataRenderers(context, metadataRendererOutput, eventHandler.getLooper(),
@@ -216,7 +228,9 @@ public class DefaultRenderersFactory implements RenderersFactory {
       AudioRendererEventListener eventListener, @ExtensionRendererMode int extensionRendererMode,
       ArrayList<Renderer> out) {
     out.add(new MediaCodecAudioRenderer(MediaCodecSelector.DEFAULT, drmSessionManager, true,
-        eventHandler, eventListener, AudioCapabilities.getCapabilities(context), audioProcessors));
+      //eventHandler, eventListener, AudioCapabilities.getCapabilities(context), audioProcessors));
+    //out.add(new MediaCodecAudioRenderer(MediaCodecSelector.DEFAULT, drmSessionManager, true,
+            eventHandler, eventListener));
 
     if (extensionRendererMode == EXTENSION_RENDERER_MODE_OFF) {
       return;
@@ -320,8 +334,8 @@ public class DefaultRenderersFactory implements RenderersFactory {
   /**
    * Builds an array of {@link AudioProcessor}s that will process PCM audio before output.
    */
-  protected AudioProcessor[] buildAudioProcessors() {
-    return new AudioProcessor[0];
+  protected AudioProcessor[] buildAudioProcessors(int i) {
+    return new AudioProcessor[i];
   }
 
 }

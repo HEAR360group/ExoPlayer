@@ -26,6 +26,8 @@ import com.google.android.exoplayer2.decoder.DecoderCounters;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 
+import java.util.HashMap;
+
 /**
  * A helper class for periodically updating a {@link TextView} with debug information obtained from
  * a {@link SimpleExoPlayer}.
@@ -122,9 +124,14 @@ public final class DebugTextViewHelper implements Runnable, ExoPlayer.EventListe
 
   private void updateAndPost() {
     textView.setText(getPlayerStateString() + getPlayerWindowIndexString() + getVideoString()
-        + getAudioString());
+        + getAudioStrings() + getPlayerAzimuthString());
     textView.removeCallbacks(this);
     textView.postDelayed(this, REFRESH_INTERVAL_MS);
+  }
+
+  private String getPlayerAzimuthString() {
+    String text = "Azimuth:" + player.azimuth / Math.PI * 180.0;
+    return text;
   }
 
   private String getPlayerStateString() {
@@ -161,6 +168,17 @@ public final class DebugTextViewHelper implements Runnable, ExoPlayer.EventListe
     return "\n" + format.sampleMimeType + "(id:" + format.id + " r:" + format.width + "x"
         + format.height + getDecoderCountersBufferCountString(player.getVideoDecoderCounters())
         + ")";
+  }
+
+  private String getAudioStrings() {
+    HashMap<String, Format> formats = player.getAudioFormats();
+    String str = "";
+    for(Format format : formats.values()) {
+      str += ("\n" + format.sampleMimeType + "(id:" + format.id + " hz:" + format.sampleRate + " ch:"
+              + format.channelCount
+              + getDecoderCountersBufferCountString(player.getAudioDecoderCounters()) + ")");
+    }
+    return str;
   }
 
   private String getAudioString() {

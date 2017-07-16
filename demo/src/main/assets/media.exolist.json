@@ -3,6 +3,34 @@
     "name": "YouTube DASH",
     "samples": [
       {
+        "name": "Boxing (MP4,H264,4*AAC,8Ball)",
+        "uri": "http://hear360.co/Boxing4AudioChannels.mp4"
+      },
+      {
+        "name": "LAPhil (MP4,H264,4*AAC,8Ball)",
+        "uri": "http://hear360.co/LAPhil4tracks192k.mp4"
+      },
+      {
+        "name": "LAPhil (MP4,H264,4*AAC,8Ball)",
+        "uri": "http://hear360.co/LAPhilSyncTest.mp4"
+      },
+      {
+        "name": "LAPhil 1080P Sync Test2 (MP4,H264,4*AAC,8Ball)",
+        "uri": "http://hear360.co/LAPhilSyncTest2.mp4"
+      },
+      {
+        "name": "LAPhil 4K Sync Test2 (MP4,H264,4*AAC,8Ball)",
+        "uri": "http://hear360.co/LAPhil4kSyncTest2.mp4"
+      },
+      {
+        "name": "HLSTest (HLS MPEG-TS,H264,4*AAC,8Ball)",
+        "uri": "http://192.168.0.32:8081/live/8ball/playlist.m3u8"
+      },
+      {
+        "name": "DASHTest (MPEG-DASH,H264,4*AAC,8Ball)",
+        "uri": "http://192.168.0.32:8081/liveall/8ball/manifest.mpd"
+      },
+      {
         "name": "Google Glass (MP4,H264)",
         "uri": "http://www.youtube.com/api/manifest/dash/id/bf5bb2419360daf1/source/youtube?as=fmp4_audio_clear,fmp4_sd_hd_clear&sparams=ip,ipbits,expire,source,id,as&ip=0.0.0.0&ipbits=0&expire=19000000000&signature=51AF5F39AB0CEC3E5497CD9C900EBFEAECCCB5C7.8506521BFC350652163895D4C26DEE124209AA9E&key=ik0",
         "extension": "mpd"

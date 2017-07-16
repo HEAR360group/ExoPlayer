@@ -38,6 +38,9 @@ import com.google.android.exoplayer2.text.TextRenderer;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -90,6 +93,7 @@ public class SimpleExoPlayer implements ExoPlayer {
 
   private Format videoFormat;
   private Format audioFormat;
+  private HashMap<String, Format> audioFormats = new HashMap<String, Format>();
 
   private Surface surface;
   private boolean ownsSurface;
@@ -105,9 +109,12 @@ public class SimpleExoPlayer implements ExoPlayer {
   private DecoderCounters videoDecoderCounters;
   private DecoderCounters audioDecoderCounters;
   private int audioSessionId;
+  private float volume;
   @C.StreamType
   private int audioStreamType;
   private float audioVolume;
+
+  public double azimuth;
 
   protected SimpleExoPlayer(RenderersFactory renderersFactory, TrackSelector trackSelector,
       LoadControl loadControl) {
@@ -339,6 +346,28 @@ public class SimpleExoPlayer implements ExoPlayer {
   }
 
   /**
+   * Sets the audio volume for each audio track of 4 audio tracks (8 Ball), with 0 being silence and 1 being unity gain.
+   *
+   * @param volume The master volume.
+   * @param volumes The sub volume array
+   */
+  public void set8BallVolume(float volume, float[] volumes) {
+    if(volumes.length != 4)
+      return;
+
+    this.volume = volume;
+    ExoPlayerMessage[] messages = new ExoPlayerMessage[audioRendererCount];
+    int count = 0;
+    for (Renderer renderer : renderers) {
+      if (renderer.getTrackType() == C.TRACK_TYPE_AUDIO) {
+        messages[count] = new ExoPlayerMessage(renderer, C.MSG_SET_VOLUME, volume * volumes[count]);
+        count++;
+      }
+    }
+    player.sendMessages(messages);
+  }
+
+  /**
    * Returns the audio volume, with 0 being silence and 1 being unity gain.
    */
   public float getVolume() {
@@ -376,6 +405,10 @@ public class SimpleExoPlayer implements ExoPlayer {
    */
   public Format getAudioFormat() {
     return audioFormat;
+  }
+
+  public HashMap<String, Format> getAudioFormats() {
+    return audioFormats;
   }
 
   /**
@@ -787,6 +820,7 @@ public class SimpleExoPlayer implements ExoPlayer {
     @Override
     public void onAudioInputFormatChanged(Format format) {
       audioFormat = format;
+      audioFormats.put(audioFormat.id, audioFormat);
       if (audioDebugListener != null) {
         audioDebugListener.onAudioInputFormatChanged(format);
       }
@@ -806,6 +840,8 @@ public class SimpleExoPlayer implements ExoPlayer {
         audioDebugListener.onAudioDisabled(counters);
       }
       audioFormat = null;
+      //audioFormats.clear();
+      audioFormats = null;
       audioDecoderCounters = null;
       audioSessionId = C.AUDIO_SESSION_ID_UNSET;
     }

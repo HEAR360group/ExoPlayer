@@ -72,6 +72,17 @@ import java.util.Arrays;
     this.adaptiveTrackSelectionFactory = adaptiveTrackSelectionFactory;
   }
 
+  public void autoSelectOverrideTrack(MappedTrackInfo trackInfo, int rendererIndex)
+  {
+    this.trackInfo = trackInfo;
+    this.rendererIndex = rendererIndex;
+
+    trackGroups = trackInfo.getTrackGroups(rendererIndex);
+    //override = selector.getSelectionOverride(rendererIndex, trackGroups);
+    override = new SelectionOverride(FIXED_FACTORY, 0, 0);
+    selector.setSelectionOverride(rendererIndex, trackGroups, override);
+  }
+
   /**
    * Shows the selection dialog for a given renderer.
    *

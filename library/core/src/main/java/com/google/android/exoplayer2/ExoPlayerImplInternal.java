@@ -1408,10 +1408,12 @@ import java.io.IOException;
               rendererPositionUs, joining, playingPeriodHolder.getRendererOffset());
           MediaClock mediaClock = renderer.getMediaClock();
           if (mediaClock != null) {
+            /*
             if (rendererMediaClock != null) {
               throw ExoPlaybackException.createForUnexpected(
                   new IllegalStateException("Multiple renderer media clocks enabled."));
             }
+            */
             rendererMediaClock = mediaClock;
             rendererMediaClockSource = renderer;
             rendererMediaClock.setPlaybackParameters(playbackParameters);

@@ -279,6 +279,7 @@ public final class AudioTrack {
 
   private final AudioCapabilities audioCapabilities;
   private final ChannelMappingAudioProcessor channelMappingAudioProcessor;
+  private final EightBallAudioProcessor eightBallAudioProcessor;
   private final SonicAudioProcessor sonicAudioProcessor;
   private final AudioProcessor[] availableAudioProcessors;
   private final Listener listener;
@@ -375,12 +376,14 @@ public final class AudioTrack {
       audioTrackUtil = new AudioTrackUtil();
     }
     channelMappingAudioProcessor = new ChannelMappingAudioProcessor();
+    eightBallAudioProcessor = new EightBallAudioProcessor();
     sonicAudioProcessor = new SonicAudioProcessor();
-    availableAudioProcessors = new AudioProcessor[3 + audioProcessors.length];
+    availableAudioProcessors = new AudioProcessor[4 + audioProcessors.length];
     availableAudioProcessors[0] = new ResamplingAudioProcessor();
     availableAudioProcessors[1] = channelMappingAudioProcessor;
-    System.arraycopy(audioProcessors, 0, availableAudioProcessors, 2, audioProcessors.length);
-    availableAudioProcessors[2 + audioProcessors.length] = sonicAudioProcessor;
+    availableAudioProcessors[2] = eightBallAudioProcessor;
+    System.arraycopy(audioProcessors, 0, availableAudioProcessors, 3, audioProcessors.length);
+    availableAudioProcessors[3 + audioProcessors.length] = sonicAudioProcessor;
     playheadOffsets = new long[MAX_PLAYHEAD_OFFSET_COUNT];
     volume = 1.0f;
     startMediaTimeState = START_NOT_SET;

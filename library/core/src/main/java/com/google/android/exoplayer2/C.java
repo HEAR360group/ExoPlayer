@@ -519,6 +519,8 @@ public final class C {
    */
   public static final int MSG_SET_SCALING_MODE = 4;
 
+  public static final int MSG_SET_8BALL_VOLUME = 5;
+
   /**
    * Applications or extensions may define custom {@code MSG_*} constants greater than or equal to
    * this value.

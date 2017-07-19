@@ -1090,6 +1090,13 @@ public final class AudioTrack {
     }
   }
 
+  public void set8BallVolume(float[] volumes) {
+    if(eightBallAudioProcessor != null)
+    {
+      eightBallAudioProcessor.set8BallVolume(volumes);
+    }
+  }
+
   /**
    * Sets the playback volume.
    *

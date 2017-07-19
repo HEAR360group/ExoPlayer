@@ -36,6 +36,11 @@ import java.util.Arrays;
   private ByteBuffer outputBuffer;
   private boolean inputEnded;
 
+  private float volumeFront;
+  private float volumeLeft;
+  private float volumeBack;
+  private float volumeRight;
+
   /**
    * Creates a new audio processor that converts audio data to {@link C#ENCODING_PCM_16BIT}.
    */
@@ -102,13 +107,31 @@ import java.util.Arrays;
       buffer.clear();
     }
     while (position < limit) {
+
+      short inputFrontL = inputBuffer.getShort(position + 2 * 0);
+      short inputFrontR = inputBuffer.getShort(position + 2 * 2);
+
+      short inputLeftL = inputBuffer.getShort(position + 2 * 1);
+      short inputLeftR = inputBuffer.getShort(position + 2 * 7);
+
+      short inputBackL = inputBuffer.getShort(position + 2 * 5);
+      short inputBackR = inputBuffer.getShort(position + 2 * 6);
+
+      short inputRightL = inputBuffer.getShort(position + 2 * 3);
+      short inputRightR = inputBuffer.getShort(position + 2 * 4);
+
+      short l = (short)(((float)inputFrontL * volumeFront + (float)inputLeftL * volumeLeft + (float)inputBackL * volumeBack + (float)inputRightL * volumeRight) * 0.707f);
+      short r = (short)(((float)inputFrontR * volumeFront + (float)inputLeftR * volumeLeft + (float)inputBackR * volumeBack + (float)inputRightR * volumeRight) * 0.707f);
+
+      buffer.putShort(l);
+      buffer.putShort(r);
       //Front Perspective
       //buffer.putShort(inputBuffer.getShort(position + 2 * 0));
       //buffer.putShort(inputBuffer.getShort(position + 2 * 2));
 
       //Left Perspective
-      buffer.putShort(inputBuffer.getShort(position + 2 * 1));
-      buffer.putShort(inputBuffer.getShort(position + 2 * 7));
+      //buffer.putShort(inputBuffer.getShort(position + 2 * 1));
+      //buffer.putShort(inputBuffer.getShort(position + 2 * 7));
 
       //Back Perspective
       //buffer.putShort(inputBuffer.getShort(position + 2 * 5));
@@ -169,6 +192,13 @@ import java.util.Arrays;
     sampleRateHz = Format.NO_VALUE;
     channelCount = Format.NO_VALUE;
     encoding = C.ENCODING_INVALID;
+  }
+
+  public void set8BallVolume(float[] volumes) {
+    volumeFront = volumes[0];
+    volumeLeft = volumes[1];
+    volumeBack = volumes[2];
+    volumeRight = volumes[3];
   }
 
 }

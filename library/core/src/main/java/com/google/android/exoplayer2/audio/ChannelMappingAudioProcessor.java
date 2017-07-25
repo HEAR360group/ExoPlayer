@@ -15,8 +15,6 @@
  */
 package com.google.android.exoplayer2.audio;
 
-import android.util.Log;
-
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.C.Encoding;
 import com.google.android.exoplayer2.Format;
@@ -87,8 +85,6 @@ import java.util.Arrays;
       }
       active |= (channelIndex != i);
     }
-
-    Log.e("ChannelMapping", "active:" + active);
 
     return true;
   }

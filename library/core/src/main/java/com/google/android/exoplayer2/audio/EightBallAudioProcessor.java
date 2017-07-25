@@ -99,6 +99,7 @@ import java.util.Arrays;
     int position = inputBuffer.position();
     int limit = inputBuffer.limit();
     int frameCount = (limit - position) / (2 * channelCount);
+    //8 in 8 out
     int outputSize = frameCount * 8 * 2;
     //int outputSize = frameCount * outputChannels.length * 2;
     if (buffer.capacity() < outputSize) {
@@ -107,40 +108,32 @@ import java.util.Arrays;
       buffer.clear();
     }
     while (position < limit) {
-
+      //The channel order of Opus (FL, C, FR, SL, SR, RL, RR, LFE) is different than Mp4 (L, R, C, LFE, RL, RR, SL, SR)
+      //Front Perspective
       short inputFrontL = inputBuffer.getShort(position + 2 * 0);
       short inputFrontR = inputBuffer.getShort(position + 2 * 2);
 
+      //Left Perspective
       short inputLeftL = inputBuffer.getShort(position + 2 * 1);
       short inputLeftR = inputBuffer.getShort(position + 2 * 7);
 
+      //Back Perspective
       short inputBackL = inputBuffer.getShort(position + 2 * 5);
       short inputBackR = inputBuffer.getShort(position + 2 * 6);
 
+      //Right Perspective
       short inputRightL = inputBuffer.getShort(position + 2 * 3);
       short inputRightR = inputBuffer.getShort(position + 2 * 4);
 
+      //Mix from all perspectives
       short l = (short)(((float)inputFrontL * volumeFront + (float)inputLeftL * volumeLeft + (float)inputBackL * volumeBack + (float)inputRightL * volumeRight) * 0.707f);
       short r = (short)(((float)inputFrontR * volumeFront + (float)inputLeftR * volumeLeft + (float)inputBackR * volumeBack + (float)inputRightR * volumeRight) * 0.707f);
 
+      //Write the mixed stereo to the first 2 channels as the output
       buffer.putShort(l);
       buffer.putShort(r);
-      //Front Perspective
-      //buffer.putShort(inputBuffer.getShort(position + 2 * 0));
-      //buffer.putShort(inputBuffer.getShort(position + 2 * 2));
 
-      //Left Perspective
-      //buffer.putShort(inputBuffer.getShort(position + 2 * 1));
-      //buffer.putShort(inputBuffer.getShort(position + 2 * 7));
-
-      //Back Perspective
-      //buffer.putShort(inputBuffer.getShort(position + 2 * 5));
-      //buffer.putShort(inputBuffer.getShort(position + 2 * 6));
-
-      //Right Perspective
-      //buffer.putShort(inputBuffer.getShort(position + 2 * 3));
-      //buffer.putShort(inputBuffer.getShort(position + 2 * 4));
-
+      //Pad with 0 for all the other channels
       buffer.putShort((short)0);
       buffer.putShort((short)0);
       buffer.putShort((short)0);
@@ -148,12 +141,7 @@ import java.util.Arrays;
       buffer.putShort((short)0);
       buffer.putShort((short)0);
 
-      /*
-      for (int channelIndex = 0; channelIndex < 8; channelIndex++) {
-        //for (int channelIndex : outputChannels) {
-        buffer.putShort(inputBuffer.getShort(position + 2 * channelIndex));
-      }
-      */
+      //(8byte per 8bits)16bit in total, multiple by 8 channels
       position += channelCount * 2;
     }
     inputBuffer.position(limit);
@@ -195,6 +183,7 @@ import java.util.Arrays;
   }
 
   public void set8BallVolume(float[] volumes) {
+    //Channel order is the as SamsungVR (Front, Left, Back, Right)
     volumeFront = volumes[0];
     volumeLeft = volumes[1];
     volumeBack = volumes[2];

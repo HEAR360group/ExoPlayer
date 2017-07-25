@@ -349,6 +349,7 @@ public class SimpleExoPlayer implements ExoPlayer {
     if(volumes.length != 4)
       return;
 
+    //Set volume to the audio track in MediaCodecAudioRenderer through messages
     ExoPlayerMessage[] messages = new ExoPlayerMessage[audioRendererCount];
     int count = 0;
     for (Renderer renderer : renderers) {

@@ -134,6 +134,7 @@ public class PlayerActivity extends Activity implements OnClickListener, ExoPlay
   private double currentAzimuth = 0;
   private int audioTracksCount = 0;
 
+  //Add Gyroscope sensor to detect the azimuth change for 8Ball audio rendering
   SensorEventListener mSensorListener = new SensorEventListener() {
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -169,22 +170,8 @@ public class PlayerActivity extends Activity implements OnClickListener, ExoPlay
 
             if(player != null && player.getPlaybackState() == STATE_READY && trackSelector != null)
             {
+              //Update 8 channels' volume according to the detected azimuth
               update8BallVolumes(currentAzimuth);
-              /*
-              MappedTrackInfo trackInfo = trackSelector.getCurrentMappedTrackInfo();
-
-              //MappedTrackInfo trackInfo = trackSelector.getTrackGroups();
-              Log.i("PlayerActivity", "Debug");
-              //MediaPlayer.TrackInfo trackInfo = trackSelector.getTrackInfo();
-
-              if (trackInfo != null) {
-                int rendererCount = trackInfo.length;
-                if(rendererCount == 7)
-                {
-                  update8BallVolumes(currentAzimuth);
-                }
-              }
-*/
             }
           }
           break;

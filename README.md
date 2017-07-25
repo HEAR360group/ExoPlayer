@@ -1,3 +1,17 @@
+# ExoPlayer2
+
+The example demonstrates streaming a MKV / WEBM content with H264 / VP8 and an 8 channel Opus audio track to Android devices.
+For preview, make sure "Auto Rotate" is enabled on your Android device.
+Please hold your Android device in landscape left, and turn your body left and right to change the azimuth.
+
+For compatible content generation, please check out "MobileVR/convert" script at the following repository:
+https://github.com/HEAR360/VRUtils
+
+As for iOS version of 8 Ball demo
+Please checkout the following repository
+https://github.com/HEAR360/iOS8BallAVPlayer
+
+
 # ExoPlayer #
 
 ExoPlayer is an application level media player for Android. It provides an

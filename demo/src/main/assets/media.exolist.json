@@ -7,12 +7,16 @@
         "uri": "http://192.168.0.32:8081/live/8ball/playlist.m3u8"
       },
       {
+        "name": "DASHTest (MPEG-DASH,VP8,Vorbis,8Ball)",
+        "uri": "http://192.168.0.82:1935/live/richard/manifest.mpd"
+      },
+      {
         "name": "LAPhil (VP8, Opus)",
         "uri": "http://hear360.co/LAPhil/3D/LAPhil_v3b_1920p.webm"
       },
       {
         "name": "Lazer (VP8, Opus)",
-        "uri": "http://hear360.co/Grayson/3D/Lazer.webm"
+        "uri": "http://hear360.co/Grayson/3D/Lazer.mp4"
       },
       {
         "name": "LAPhil (H264, Opus)",

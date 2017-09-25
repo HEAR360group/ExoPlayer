@@ -11,6 +11,10 @@
         "uri": "http://192.168.0.82:1935/live/richard/manifest.mpd"
       },
       {
+        "name": "DarkKnight (H264, 5.1 AAC)",
+        "uri": "http://hear360.co/DartKnightRisesAAC.mp4"
+      },
+      {
         "name": "LAPhil (VP8, Opus)",
         "uri": "http://hear360.co/LAPhil/3D/LAPhil_v3b_1920p.webm"
       },

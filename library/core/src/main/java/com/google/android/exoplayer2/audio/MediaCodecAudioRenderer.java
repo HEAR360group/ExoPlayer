@@ -400,6 +400,11 @@ public class MediaCodecAudioRenderer extends MediaCodecRenderer implements Media
       case C.MSG_SET_8BALL_VOLUME:
         audioTrack.set8BallVolume((float[]) message);
         break;
+
+      case C.MSG_SET_AZIMUTH:
+        audioTrack.setAzimuth((Double) message);
+        break;
+
       case C.MSG_SET_VOLUME:
         audioTrack.setVolume((Float) message);
         break;

@@ -362,6 +362,18 @@ public class SimpleExoPlayer implements ExoPlayer {
 
   }
 
+  public void setAzimuth(double azimuth) {
+    this.azimuth = azimuth;
+    ExoPlayerMessage[] messages = new ExoPlayerMessage[audioRendererCount];
+    int count = 0;
+    for (Renderer renderer : renderers) {
+      if (renderer.getTrackType() == C.TRACK_TYPE_AUDIO) {
+        messages[count++] = new ExoPlayerMessage(renderer, C.MSG_SET_AZIMUTH, azimuth);
+      }
+    }
+    player.sendMessages(messages);
+  }
+
   /**
    * Returns the audio volume, with 0 being silence and 1 being unity gain.
    */

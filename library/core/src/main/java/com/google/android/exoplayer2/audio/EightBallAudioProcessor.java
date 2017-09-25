@@ -107,6 +107,7 @@ import java.util.Arrays;
     } else {
       buffer.clear();
     }
+
     while (position < limit) {
       //The channel order of Opus (FL, C, FR, SL, SR, RL, RR, LFE) is different than Mp4 (L, R, C, LFE, RL, RR, SL, SR)
       //Front Perspective

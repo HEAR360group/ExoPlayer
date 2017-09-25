@@ -191,7 +191,7 @@ public class PlayerActivity extends Activity implements OnClickListener, ExoPlay
 
     private void update8BallVolumes(double azimuth)
     {
-      player.azimuth = azimuth;
+      //player.azimuth = azimuth;
 
       double frontVol = 0;
       double leftVol = 0;
@@ -229,6 +229,7 @@ public class PlayerActivity extends Activity implements OnClickListener, ExoPlay
 
       float[] volumes = new float[] {(float)frontVol, (float)leftVol, (float)backVol, (float)rightVol};
       player.set8BallVolume(volumes);
+      player.setAzimuth(azimuth);
 
       Log.i("PlayerActivity", "azimuth:" + Math.toDegrees(azimuth) + ", front:" + frontVol + ", right:" + rightVol + ", backVol:" + backVol + ", leftVol:" + leftVol);
     }

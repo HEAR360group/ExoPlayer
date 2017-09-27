@@ -395,6 +395,7 @@ public class PlayerActivity extends Activity implements OnClickListener, ExoPlay
               ? (preferExtensionDecoders ? DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
               : DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
               : DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
+      extensionRendererMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON;
       DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(this,
           drmSessionManager, extensionRendererMode);
 

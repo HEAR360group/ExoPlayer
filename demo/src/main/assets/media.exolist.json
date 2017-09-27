@@ -15,6 +15,18 @@
         "uri": "http://hear360.co/DartKnightRisesAAC.mp4"
       },
       {
+        "name": "DarkKnight (H264, 5.1 AC3)",
+        "uri": "http://hear360.co/DartKAC3.mp4"
+      },
+      {
+        "name": "DarkKnight (H264, 5.1 EAC3)",
+        "uri": "http://hear360.co/DartKEAC3.mp4"
+      },
+      {
+        "name": "DarkKnight (H264, 5.1 AC3 384k)",
+        "uri": "http://hear360.co/DartKAC3.mkv"
+      },
+      {
         "name": "LAPhil (VP8, Opus)",
         "uri": "http://hear360.co/LAPhil/3D/LAPhil_v3b_1920p.webm"
       },

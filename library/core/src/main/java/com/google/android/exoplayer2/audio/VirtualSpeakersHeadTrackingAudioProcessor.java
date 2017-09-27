@@ -169,21 +169,22 @@ import javax.vecmath.Vector3d;
     public void setAzimuth(double azimuth) {
 
         Vector3d rotatedFrontVec = rotate(azimuth, FRONT_VEC);
-
+/*
         speakerPos[0] = Math.toRadians(-30);
         speakerPos[1] = Math.toRadians(30);
         speakerPos[2] = Math.toRadians(0);
         speakerPos[3] = Math.toRadians(0);
         speakerPos[4] = Math.toRadians(-120);
         speakerPos[5] = Math.toRadians(120);
-/*
+        */
+
         speakerPos[0] = Math.toRadians(-45);
         speakerPos[1] = Math.toRadians(45);
         speakerPos[2] = Math.toRadians(0);
         speakerPos[3] = Math.toRadians(0);
         speakerPos[4] = Math.toRadians(-135);
         speakerPos[5] = Math.toRadians(135);
-*/
+
         for(int i = 0; i < DEFAULT_CHANNEL_COUNT; i++) {
             speakerVec[i] = rotate(speakerPos[i], FRONT_VEC);
         }
@@ -244,10 +245,10 @@ import javax.vecmath.Vector3d;
             double angle1 = degreeDiffArrayR[0].angleValue;
             double dot1 = degreeDiffArrayR[0].dotValue;
 
-            double speaker0Vol = angle1 / (angle0 + angle1);
-            double speaker1Vol = angle0 / (angle0 + angle1);
-            //double speaker0Vol = dot0 / (dot0 + dot1);
-            //double speaker1Vol = dot1 / (dot0 + dot1);
+            //double speaker0Vol = angle1 / (angle0 + angle1);
+            //double speaker1Vol = angle0 / (angle0 + angle1);
+            double speaker0Vol = dot0 / (dot0 + dot1);
+            double speaker1Vol = dot1 / (dot0 + dot1);
 
             volumeMatrix[i][speakerIndex0] = speaker0Vol;
             volumeMatrix[i][speakerIndex1] = speaker1Vol;
@@ -284,8 +285,8 @@ import javax.vecmath.Vector3d;
 
     private int orderInsert(DegreeDiff[] arr, int first, int last, DegreeDiff target) {
         int i = last;
-        while((i > first) && (target.angleValue < arr[i - 1].angleValue)) {
-        //while((i > first) && (target.dotValue > arr[i - 1].dotValue)) {
+        //while((i > first) && (target.angleValue < arr[i - 1].angleValue)) {
+        while((i > first) && (target.dotValue > arr[i - 1].dotValue)) {
             arr[i] = arr[i - 1];
             i = i - 1;
         }

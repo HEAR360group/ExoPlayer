@@ -41,6 +41,8 @@ import java.util.Arrays;
   private float volumeBack;
   private float volumeRight;
 
+  private static final Object azimuthLock = new Object();
+
   /**
    * Creates a new audio processor that converts audio data to {@link C#ENCODING_PCM_16BIT}.
    */
@@ -185,10 +187,12 @@ import java.util.Arrays;
 
   public void set8BallVolume(float[] volumes) {
     //Channel order is the as SamsungVR (Front, Left, Back, Right)
-    volumeFront = volumes[0];
-    volumeLeft = volumes[1];
-    volumeBack = volumes[2];
-    volumeRight = volumes[3];
+    synchronized (azimuthLock) {
+      volumeFront = volumes[0];
+      volumeLeft = volumes[1];
+      volumeBack = volumes[2];
+      volumeRight = volumes[3];
+    }
   }
 
 }

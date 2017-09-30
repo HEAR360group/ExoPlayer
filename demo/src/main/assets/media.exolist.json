@@ -23,6 +23,14 @@
         "uri": "http://hear360.co/DartKEAC3.mp4"
       },
       {
+        "name": "DarkKnight (H264, 5.1 AC3 48k)",
+        "uri": "http://hear360.co/DartKAC348k.mp4"
+      },
+      {
+        "name": "DarkKnight (H264, 5.1 EAC3 48k)",
+        "uri": "http://hear360.co/DartKEAC348k.mp4"
+      },
+      {
         "name": "DarkKnight (H264, 5.1 AC3 384k)",
         "uri": "http://hear360.co/DartKAC3.mkv"
       },

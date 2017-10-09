@@ -41,6 +41,8 @@ public final class DebugTextViewHelper implements Runnable, Player.EventListener
 
   private boolean started;
 
+  private int azimuth;
+
   /**
    * @param player The {@link SimpleExoPlayer} from which debug information should be obtained.
    * @param textView The {@link TextView} that should be updated to display the information.
@@ -130,7 +132,7 @@ public final class DebugTextViewHelper implements Runnable, Player.EventListener
   @SuppressLint("SetTextI18n")
   private void updateAndPost() {
     textView.setText(getPlayerStateString() + getPlayerWindowIndexString() + getVideoString()
-        + getAudioString());
+        + getAudioString() + getSpatialAudioString());
     textView.removeCallbacks(this);
     textView.postDelayed(this, REFRESH_INTERVAL_MS);
   }
@@ -179,6 +181,14 @@ public final class DebugTextViewHelper implements Runnable, Player.EventListener
     return "\n" + format.sampleMimeType + "(id:" + format.id + " hz:" + format.sampleRate + " ch:"
         + format.channelCount
         + getDecoderCountersBufferCountString(player.getAudioDecoderCounters()) + ")";
+  }
+
+  private String getSpatialAudioString() {
+    return "\nAzimuth:" + azimuth;
+  }
+
+  public void setAzimuth(double azimuth) {
+    this.azimuth = (int)Math.toDegrees(azimuth);
   }
 
   private static String getDecoderCountersBufferCountString(DecoderCounters counters) {

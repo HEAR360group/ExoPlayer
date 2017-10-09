@@ -40,6 +40,7 @@ android {
 }
 
 dependencies {
+    compile project(path: modulePrefix + 'extension-hps')
     compile 'com.android.support:support-annotations:' + supportLibraryVersion
     compile group: 'javax.vecmath', name: 'vecmath', version: '1.5.2'
     androidTestCompile 'com.google.dexmaker:dexmaker:' + dexmakerVersion

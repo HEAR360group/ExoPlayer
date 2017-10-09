@@ -384,17 +384,17 @@ public final class AudioTrack {
     //From 3 audio processors to 4 (Added 8Ball processor)
     //From 4 audio processors to 5 (Added Virtual Speaker Head Tracking processor)
     //From 5 audio processors to 6 (Added HPS processor)
-    availableAudioProcessors = new AudioProcessor[6 + audioProcessors.length];
+    availableAudioProcessors = new AudioProcessor[5 + audioProcessors.length];
     availableAudioProcessors[0] = new ResamplingAudioProcessor();
     availableAudioProcessors[1] = channelMappingAudioProcessor;
     //Added the 8Ball processor to the DSP chain of the current audio track
-    availableAudioProcessors[2] = eightBallAudioProcessor;
-    availableAudioProcessors[3] = virtualSpeakersHeadTrackingAudioProcessor;
-    availableAudioProcessors[4] = hpsAudioProcessor;
+    //availableAudioProcessors[2] = eightBallAudioProcessor;
+    availableAudioProcessors[2] = virtualSpeakersHeadTrackingAudioProcessor;
+    availableAudioProcessors[3] = hpsAudioProcessor;
     //The 3rd audio processor becomes the 4rd one
     //The 4rd audio processor becomes the 5rd one
-    System.arraycopy(audioProcessors, 0, availableAudioProcessors, 5, audioProcessors.length);
-    availableAudioProcessors[5 + audioProcessors.length] = sonicAudioProcessor;
+    System.arraycopy(audioProcessors, 0, availableAudioProcessors, 4, audioProcessors.length);
+    availableAudioProcessors[4 + audioProcessors.length] = sonicAudioProcessor;
     playheadOffsets = new long[MAX_PLAYHEAD_OFFSET_COUNT];
     volume = 1.0f;
     startMediaTimeState = START_NOT_SET;

@@ -196,7 +196,7 @@ public class PlayerActivity extends Activity implements OnClickListener, EventLi
 
     private void update8BallVolumes(double azimuth)
     {
-      //player.azimuth = azimuth;
+        debugViewHelper.setAzimuth(azimuth);
 
       double frontVol = 0;
       double leftVol = 0;

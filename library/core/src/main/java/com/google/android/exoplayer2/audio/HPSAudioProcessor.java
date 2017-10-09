@@ -3,8 +3,11 @@ package com.google.android.exoplayer2.audio;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.Format;
 
+import com.google.android.exoplayer2.ext.hps.*;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
 import java.util.Arrays;
 
 import java.nio.ByteBuffer;
@@ -22,26 +25,32 @@ import java.nio.ByteOrder;
     private int sampleRateHz;
     private int channelCount;
 
+    private HPSLibrary hpsLibrary;
+    private HPSAudioDSP hpsAudioDSP;
+
     @C.PcmEncoding
     private int encoding;
     private ByteBuffer buffer;
     private ByteBuffer outputBuffer;
     private boolean inputEnded;
 
-    private float volumeFront;
-    private float volumeLeft;
-    private float volumeBack;
-    private float volumeRight;
+    private float[] inputBuf;
+    private float[] outputBuf;
 
     /**
      * Creates a new audio processor that converts audio data to {@link C#ENCODING_PCM_16BIT}.
      */
     public HPSAudioProcessor() {
+        boolean result = hpsLibrary.isAvailable();
+
         sampleRateHz = Format.NO_VALUE;
         channelCount = Format.NO_VALUE;
         encoding = C.ENCODING_INVALID;
         buffer = EMPTY_BUFFER;
         outputBuffer = EMPTY_BUFFER;
+
+        inputBuf = new float[30000];
+        outputBuf = new float[30000];
     }
 
     @Override
@@ -65,6 +74,9 @@ import java.nio.ByteOrder;
         this.sampleRateHz = sampleRateHz;
         this.channelCount = channelCount;
         this.encoding = encoding;
+
+        hpsAudioDSP = new HPSAudioDSP(sampleRateHz);
+        hpsAudioDSP.LoadIRsJava(0);
 
         return true;
     }
@@ -99,7 +111,17 @@ import java.nio.ByteOrder;
         } else {
             buffer.clear();
         }
+
+        int fBufIndex = 0;
         while (position < limit) {
+            short input = inputBuffer.getShort(position);
+            inputBuf[fBufIndex++] = (float)input / 32767.0f;
+/*
+            if(fBufIndex % 6 == 3) {
+                inputBuf[fBufIndex] = 0;
+            }
+            */
+/*
             //The channel order of Opus (FL, C, FR, SL, SR, RL, RR, LFE) is different than Mp4 (L, R, C, LFE, RL, RR, SL, SR)
             //Front Perspective
             short inputFrontL = inputBuffer.getShort(position + 2 * 0);
@@ -122,10 +144,31 @@ import java.nio.ByteOrder;
             buffer.putShort((short)0);
             buffer.putShort((short)0);
             buffer.putShort((short)0);
-
+*/
             //(8byte per 8bits)16bit in total, multiple by 8 channels
-            position += channelCount * 2;
+            position += 2;
         }
+
+        if(frameCount != 0) {
+            //hpsAudioDSP.ProcessInPlaceInterleavedFloat(inputBuf, channelCount, frameCount, true, true);
+            hpsAudioDSP.ProcessOutOfPlaceInterleavedFloat(inputBuf, outputBuf, channelCount, frameCount, true, true);
+        }
+
+        for(int i = 0; i < frameCount; i++) {
+            short inputFrontL = (short)(outputBuf[i * channelCount] * 32767.0f / 3.0f);
+            short inputFrontR = (short)(outputBuf[i * channelCount + 1] * 32767.0f / 3.0f);
+
+            //Write the mixed stereo to the first 2 channels as the output
+            buffer.putShort(inputFrontL);
+            buffer.putShort(inputFrontR);
+
+            //Pad with 0 for all the other channels
+            buffer.putShort((short)0);
+            buffer.putShort((short)0);
+            buffer.putShort((short)0);
+            buffer.putShort((short)0);
+        }
+
         inputBuffer.position(limit);
         buffer.flip();
         outputBuffer = buffer;

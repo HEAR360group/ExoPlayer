@@ -38,6 +38,8 @@ import java.util.Arrays;
   private ByteBuffer outputBuffer;
   private boolean inputEnded;
 
+  private static final int DEFAULT_CHANNEL_COUNT = 8;
+
   /**
    * Creates a new processor that applies a channel mapping.
    */
@@ -61,6 +63,7 @@ import java.util.Arrays;
   @Override
   public boolean configure(int sampleRateHz, int channelCount, @Encoding int encoding)
       throws UnhandledFormatException {
+    /*
     boolean outputChannelsChanged = !Arrays.equals(pendingOutputChannels, outputChannels);
     outputChannels = pendingOutputChannels;
     if (outputChannels == null) {
@@ -74,9 +77,10 @@ import java.util.Arrays;
         && this.channelCount == channelCount) {
       return false;
     }
+    */
     this.sampleRateHz = sampleRateHz;
     this.channelCount = channelCount;
-
+/*
     active = channelCount != outputChannels.length;
     for (int i = 0; i < outputChannels.length; i++) {
       int channelIndex = outputChannels[i];
@@ -85,6 +89,8 @@ import java.util.Arrays;
       }
       active |= (channelIndex != i);
     }
+*/
+    active = true;
 
     return true;
   }
@@ -96,7 +102,8 @@ import java.util.Arrays;
 
   @Override
   public int getOutputChannelCount() {
-    return outputChannels == null ? channelCount : outputChannels.length;
+    //return outputChannels == null ? channelCount : outputChannels.length;
+    return DEFAULT_CHANNEL_COUNT;
   }
 
   @Override
@@ -109,16 +116,23 @@ import java.util.Arrays;
     int position = inputBuffer.position();
     int limit = inputBuffer.limit();
     int frameCount = (limit - position) / (2 * channelCount);
-    int outputSize = frameCount * outputChannels.length * 2;
+    int outputSize = frameCount * DEFAULT_CHANNEL_COUNT * 2;
+    //int outputSize = frameCount * outputChannels.length * 2;
     if (buffer.capacity() < outputSize) {
       buffer = ByteBuffer.allocateDirect(outputSize).order(ByteOrder.nativeOrder());
     } else {
       buffer.clear();
     }
     while (position < limit) {
-      for (int channelIndex : outputChannels) {
+      for (int channelIndex = 0; channelIndex < channelCount; channelIndex++) {
+      //for (int channelIndex : outputChannels) {
         buffer.putShort(inputBuffer.getShort(position + 2 * channelIndex));
       }
+
+      for(int channelIndex = channelCount; channelIndex < DEFAULT_CHANNEL_COUNT; channelIndex++) {
+        buffer.putShort((short)0);
+      }
+
       position += channelCount * 2;
     }
     inputBuffer.position(limit);

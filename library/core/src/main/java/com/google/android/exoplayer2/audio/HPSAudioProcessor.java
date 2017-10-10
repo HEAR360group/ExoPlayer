@@ -37,6 +37,8 @@ import java.nio.ByteOrder;
     private float[] inputBuf;
     private float[] outputBuf;
 
+    private final int DEFAULT_CHANNEL_COUNT = 8;
+
     /**
      * Creates a new audio processor that converts audio data to {@link C#ENCODING_PCM_16BIT}.
      */
@@ -84,7 +86,7 @@ import java.nio.ByteOrder;
     @Override
     public boolean isActive() {
         //return false;
-        return encoding != C.ENCODING_INVALID && channelCount == 6;
+        return encoding != C.ENCODING_INVALID && channelCount == DEFAULT_CHANNEL_COUNT;
     }
 
     @Override
@@ -104,7 +106,7 @@ import java.nio.ByteOrder;
         int limit = inputBuffer.limit();
         int frameCount = (limit - position) / (2 * channelCount);
         //6 in 6 out
-        int outputSize = frameCount * 6 * 2;
+        int outputSize = frameCount * DEFAULT_CHANNEL_COUNT * 2;
         //int outputSize = frameCount * outputChannels.length * 2;
         if (buffer.capacity() < outputSize) {
             buffer = ByteBuffer.allocateDirect(outputSize).order(ByteOrder.nativeOrder());
@@ -116,35 +118,7 @@ import java.nio.ByteOrder;
         while (position < limit) {
             short input = inputBuffer.getShort(position);
             inputBuf[fBufIndex++] = (float)input / 32767.0f;
-/*
-            if(fBufIndex % 6 == 3) {
-                inputBuf[fBufIndex] = 0;
-            }
-            */
-/*
-            //The channel order of Opus (FL, C, FR, SL, SR, RL, RR, LFE) is different than Mp4 (L, R, C, LFE, RL, RR, SL, SR)
-            //Front Perspective
-            short inputFrontL = inputBuffer.getShort(position + 2 * 0);
-            short inputFrontR = inputBuffer.getShort(position + 2 * 1);
 
-            //Left Perspective
-            short inputLeftL = inputBuffer.getShort(position + 2 * 2);
-            short inputLeftR = inputBuffer.getShort(position + 2 * 3);
-
-            //Back Perspective
-            short inputBackL = inputBuffer.getShort(position + 2 * 4);
-            short inputBackR = inputBuffer.getShort(position + 2 * 5);
-
-            //Write the mixed stereo to the first 2 channels as the output
-            buffer.putShort(inputFrontL);
-            buffer.putShort(inputFrontR);
-
-            //Pad with 0 for all the other channels
-            buffer.putShort((short)0);
-            buffer.putShort((short)0);
-            buffer.putShort((short)0);
-            buffer.putShort((short)0);
-*/
             //(8byte per 8bits)16bit in total, multiple by 8 channels
             position += 2;
         }
@@ -163,6 +137,8 @@ import java.nio.ByteOrder;
             buffer.putShort(inputFrontR);
 
             //Pad with 0 for all the other channels
+            buffer.putShort((short)0);
+            buffer.putShort((short)0);
             buffer.putShort((short)0);
             buffer.putShort((short)0);
             buffer.putShort((short)0);

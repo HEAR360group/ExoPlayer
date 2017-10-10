@@ -19,7 +19,7 @@ import javax.vecmath.Vector3d;
 /* package */ final class VirtualSpeakersHeadTrackingAudioProcessor implements AudioProcessor {
 
     private final int MAX_CHANNEL_COUNT = 8;
-    private final int DEFAULT_CHANNEL_COUNT = 6;
+    private final int DEFAULT_CHANNEL_COUNT = 8;
     private final int LFE_CHANNEL_ID = 3;
     private final boolean HAS_LFE = true;
     private final Vector3d FRONT_VEC = new Vector3d(0, 0, 1);
@@ -58,7 +58,7 @@ import javax.vecmath.Vector3d;
         buffer = EMPTY_BUFFER;
         outputBuffer = EMPTY_BUFFER;
 
-        //setAzimuth(Math.toRadians(45));
+        //azimuth = Math.toRadians(45);
     }
 
     @Override
@@ -89,7 +89,7 @@ import javax.vecmath.Vector3d;
     @Override
     public boolean isActive() {
         //return false;
-        return encoding != C.ENCODING_INVALID && channelCount == 6;
+        return encoding != C.ENCODING_INVALID && channelCount == DEFAULT_CHANNEL_COUNT;
     }
 
     @Override
@@ -113,8 +113,8 @@ import javax.vecmath.Vector3d;
         int position = inputBuffer.position();
         int limit = inputBuffer.limit();
         int frameCount = (limit - position) / (2 * channelCount);
-        //6 in 6 out
-        int outputSize = frameCount * 6 * 2;
+        //8 in 8 out
+        int outputSize = frameCount * DEFAULT_CHANNEL_COUNT * 2;
         //int outputSize = frameCount * outputChannels.length * 2;
         if (buffer.capacity() < outputSize) {
             buffer = ByteBuffer.allocateDirect(outputSize).order(ByteOrder.nativeOrder());
@@ -127,7 +127,7 @@ import javax.vecmath.Vector3d;
                 short output = 0;
                 for(int inIndex = 0; inIndex < channelCount; inIndex++) {
                     short input = inputBuffer.getShort(position + 2 * inIndex);
-                    short mixedInput = (short)(input * volumeMatrix[outIndex][inIndex]);
+                    short mixedInput = (short)(input * volumeMatrix[inIndex][outIndex]);
                     output += mixedInput;
                 }
                 buffer.putShort(output);
@@ -176,7 +176,7 @@ import javax.vecmath.Vector3d;
 
     public void setAzimuth(double azimuth) {
         synchronized (azimuthLock) {
-            this.azimuth = azimuth;
+            this.azimuth = -azimuth;
         }
     }
 
@@ -193,7 +193,7 @@ import javax.vecmath.Vector3d;
         speakerPos[3] = Math.toRadians(0);
         speakerPos[4] = Math.toRadians(-120);
         speakerPos[5] = Math.toRadians(120);
-        */
+*/
 
         speakerPos[0] = Math.toRadians(-45);
         speakerPos[1] = Math.toRadians(45);
@@ -201,6 +201,8 @@ import javax.vecmath.Vector3d;
         speakerPos[3] = Math.toRadians(0);
         speakerPos[4] = Math.toRadians(-135);
         speakerPos[5] = Math.toRadians(135);
+        speakerPos[6] = Math.toRadians(-90);
+        speakerPos[7] = Math.toRadians(90);
 
         for(int i = 0; i < DEFAULT_CHANNEL_COUNT; i++) {
             speakerVec[i] = rotate(speakerPos[i], FRONT_VEC);
@@ -229,20 +231,20 @@ import javax.vecmath.Vector3d;
                 if(HAS_LFE && speakerPosID == LFE_CHANNEL_ID)
                     continue;
 
-                double dotValue = rotatedSpeakerVec[i].dot(speakerVec[speakerPosID]);
+                //double dotValue = rotatedSpeakerVec[i].dot(speakerVec[speakerPosID]);
                 Vector3d crossVec = new Vector3d();
                 crossVec.cross(rotatedSpeakerVec[i], speakerVec[speakerPosID]);
                 double angleValue = rotatedSpeakerVec[i].angle(speakerVec[speakerPosID]);
-                if(dotValue <= 0)
-                    continue;
+                //if(dotValue <= 0)
+                    //continue;
 
                 DegreeDiff degreeDiff = new DegreeDiff();
-                degreeDiff.dotValue = dotValue;
+                //degreeDiff.dotValue = dotValue;
                 degreeDiff.crossValue = crossVec.y;
                 degreeDiff.angleValue = angleValue;
                 degreeDiff.speakerIndex = speakerPosID;
 
-                if(degreeDiff.dotValue == 1 /*|| Math.abs(degreeDiff.dotValue) < 0.001*/) {
+                if(degreeDiff.angleValue == 0 /*|| Math.abs(degreeDiff.dotValue) < 0.001*/) {
                     degreeDiffArrayCountL = 0;
                     degreeDiffArrayCountR = 0;
                     break;
@@ -263,15 +265,20 @@ import javax.vecmath.Vector3d;
                 //Calculate volume distribution
                 int speakerIndex0 = degreeDiffArrayL[0].speakerIndex;
                 double angle0 = degreeDiffArrayL[0].angleValue;
-                double dot0 = degreeDiffArrayL[0].dotValue;
+                //double dot0 = degreeDiffArrayL[0].dotValue;
                 int speakerIndex1 = degreeDiffArrayR[0].speakerIndex;
                 double angle1 = degreeDiffArrayR[0].angleValue;
-                double dot1 = degreeDiffArrayR[0].dotValue;
+                //double dot1 = degreeDiffArrayR[0].dotValue;
 
-                //double speaker0Vol = angle1 / (angle0 + angle1);
-                //double speaker1Vol = angle0 / (angle0 + angle1);
-                double speaker0Vol = dot0 / (dot0 + dot1);
-                double speaker1Vol = dot1 / (dot0 + dot1);
+                //double actAngle0 = Math.sin(angle0);
+                //double actAngle1 = Math.cos(angle1);
+                double speaker0Vol = angle1 / (angle0 + angle1);
+                double speaker1Vol = angle0 / (angle0 + angle1);
+                //double speaker0ActVol = Math.sin(speaker0Vol * Math.PI / 2);
+                //double speaker1ActVol = Math.cos(speaker0Vol * Math.PI / 2);
+
+                //double speaker0Vol = dot0 / (dot0 + dot1);
+                //double speaker1Vol = dot1 / (dot0 + dot1);
 
                 volumeMatrix[i][speakerIndex0] = speaker0Vol;
                 volumeMatrix[i][speakerIndex1] = speaker1Vol;
@@ -299,15 +306,10 @@ import javax.vecmath.Vector3d;
                     volumeMatrix[i][j] = 0;
                 }
             }
-
-
         }
 
         if(HAS_LFE)
             volumeMatrix[LFE_CHANNEL_ID][LFE_CHANNEL_ID] = 1;
-
-        Vector3d[] rotatedVec = rotatedSpeakerVec;
-        double[][] volMat = volumeMatrix;
     }
 
     private Vector3d rotate(double theta, Vector3d in) {
@@ -323,8 +325,8 @@ import javax.vecmath.Vector3d;
 
     private int orderInsert(DegreeDiff[] arr, int first, int last, DegreeDiff target) {
         int i = last;
-        //while((i > first) && (target.angleValue < arr[i - 1].angleValue)) {
-        while((i > first) && (target.dotValue > arr[i - 1].dotValue)) {
+        while((i > first) && (target.angleValue < arr[i - 1].angleValue)) {
+        //while((i > first) && (target.dotValue > arr[i - 1].dotValue)) {
             arr[i] = arr[i - 1];
             i = i - 1;
         }

@@ -279,7 +279,7 @@ public class PlayerActivity extends Activity implements OnClickListener, EventLi
 
     //VR Sensors Related (Hear360)
     mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-    mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_NORMAL);
+    mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_FASTEST);
   }
 
   @Override

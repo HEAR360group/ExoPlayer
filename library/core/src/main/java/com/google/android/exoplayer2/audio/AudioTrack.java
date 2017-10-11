@@ -1096,6 +1096,12 @@ public final class AudioTrack {
     }
   }
 
+  public void setVolumeMatrix(double[][] volumeMatrix) {
+    if(virtualSpeakersHeadTrackingAudioProcessor != null) {
+      virtualSpeakersHeadTrackingAudioProcessor.setVolumeMatrix(volumeMatrix);
+    }
+  }
+
   /**
    * Sets the playback volume.
    *

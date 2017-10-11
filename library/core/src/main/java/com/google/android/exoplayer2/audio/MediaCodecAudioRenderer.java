@@ -405,6 +405,10 @@ public class MediaCodecAudioRenderer extends MediaCodecRenderer implements Media
         audioTrack.setAzimuth((Double) message);
         break;
 
+      case C.MSG_SET_VOLUME_MATRIX:
+        audioTrack.setVolumeMatrix((double[][])message);
+        break;
+
       case C.MSG_SET_VOLUME:
         audioTrack.setVolume((Float) message);
         break;

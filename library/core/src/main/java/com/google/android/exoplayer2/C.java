@@ -677,6 +677,8 @@ public final class C {
 
   public static final int MSG_SET_AZIMUTH = 6;
 
+  public static final int MSG_SET_VOLUME_MATRIX = 7;
+
   /**
    * Applications or extensions may define custom {@code MSG_*} constants greater than or equal to
    * this value.

@@ -85,6 +85,8 @@ import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.util.UUID;
 
+import javax.vecmath.Vector3d;
+
 import static com.google.android.exoplayer2.ExoPlayer.STATE_READY;
 
 /**
@@ -139,6 +141,21 @@ public class PlayerActivity extends Activity implements OnClickListener, EventLi
   private double currentAzimuth = 0;
   private int audioTracksCount = 0;
 
+  private final int MAX_CHANNEL_COUNT = 8;
+  private final int DEFAULT_CHANNEL_COUNT = 8;
+  private final int LFE_CHANNEL_ID = 3;
+  private final boolean HAS_LFE = true;
+  private final Vector3d FRONT_VEC = new Vector3d(0, 0, 1);
+
+  private double[][] volumeMatrix = new double[MAX_CHANNEL_COUNT][MAX_CHANNEL_COUNT];
+
+  public class DegreeDiff {
+    public double dotValue;
+    public double crossValue;
+    public double angleValue;
+    public int speakerIndex;
+  }
+
   //Add Gyroscope sensor to detect the azimuth change for 8Ball audio rendering
   SensorEventListener mSensorListener = new SensorEventListener() {
     @Override
@@ -175,8 +192,13 @@ public class PlayerActivity extends Activity implements OnClickListener, EventLi
 
             if(player != null && player.getPlaybackState() == STATE_READY && trackSelector != null)
             {
-              //Update 8 channels' volume according to the detected azimuth
+              //Update 8 channels' volume according to the detected azimuth1
               update8BallVolumes(currentAzimuth);
+              updateVolumeMatrix(-currentAzimuth, volumeMatrix);
+              player.setVolumeMatrix(volumeMatrix);
+              //player.setAzimuth(azimuth);
+              debugViewHelper.setAzimuth(-currentAzimuth);
+              debugViewHelper.setVolumeMatrix(volumeMatrix);
             }
           }
           break;
@@ -194,57 +216,208 @@ public class PlayerActivity extends Activity implements OnClickListener, EventLi
       return azimuth;
     }
 
-    private void update8BallVolumes(double azimuth)
-    {
-        debugViewHelper.setAzimuth(azimuth);
-
-      double frontVol = 0;
-      double leftVol = 0;
-      double backVol = 0;
-      double rightVol = 0;
-
-      if (azimuth <= Math.PI / 2 && azimuth >= 0)
-      {
-        frontVol = Math.cos (azimuth);
-        rightVol = Math.sin (azimuth);
-        backVol = 0;
-        leftVol = 0;
-      }
-      else if (azimuth > Math.PI / 2 && azimuth <= Math.PI)
-      {
-        frontVol = 0;
-        rightVol = Math.cos (azimuth - Math.PI / 2);
-        backVol = Math.sin (azimuth - Math.PI / 2);
-        leftVol = 0;
-      }
-      else if (azimuth < -Math.PI /2 && azimuth >= -Math.PI)
-      {
-        frontVol = 0;
-        rightVol = 0;
-        backVol = Math.sin (-azimuth - Math.PI / 2);
-        leftVol = Math.cos (-azimuth - Math.PI / 2);
-      }
-      else if (azimuth < 0 && azimuth >= -Math.PI / 2)
-      {
-        frontVol = Math.cos (-azimuth);
-        rightVol = 0;
-        backVol = 0;
-        leftVol = Math.sin (-azimuth);
-      }
-
-      float[] volumes = new float[] {(float)frontVol, (float)leftVol, (float)backVol, (float)rightVol};
-      player.set8BallVolume(volumes);
-      player.setAzimuth(azimuth);
-
-      Log.i("PlayerActivity", "azimuth:" + Math.toDegrees(azimuth) + ", front:" + frontVol + ", right:" + rightVol + ", backVol:" + backVol + ", leftVol:" + leftVol);
-    }
-
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
       // TODO Auto-generated method stub
 
     }
   };
+
+  private void update8BallVolumes(double azimuth)
+  {
+    double frontVol = 0;
+    double leftVol = 0;
+    double backVol = 0;
+    double rightVol = 0;
+
+    if (azimuth <= Math.PI / 2 && azimuth >= 0)
+    {
+      frontVol = Math.cos (azimuth);
+      rightVol = Math.sin (azimuth);
+      backVol = 0;
+      leftVol = 0;
+    }
+    else if (azimuth > Math.PI / 2 && azimuth <= Math.PI)
+    {
+      frontVol = 0;
+      rightVol = Math.cos (azimuth - Math.PI / 2);
+      backVol = Math.sin (azimuth - Math.PI / 2);
+      leftVol = 0;
+    }
+    else if (azimuth < -Math.PI /2 && azimuth >= -Math.PI)
+    {
+      frontVol = 0;
+      rightVol = 0;
+      backVol = Math.sin (-azimuth - Math.PI / 2);
+      leftVol = Math.cos (-azimuth - Math.PI / 2);
+    }
+    else if (azimuth < 0 && azimuth >= -Math.PI / 2)
+    {
+      frontVol = Math.cos (-azimuth);
+      rightVol = 0;
+      backVol = 0;
+      leftVol = Math.sin (-azimuth);
+    }
+
+    float[] volumes = new float[] {(float)frontVol, (float)leftVol, (float)backVol, (float)rightVol};
+    player.set8BallVolume(volumes);
+
+    Log.i("PlayerActivity", "azimuth:" + Math.toDegrees(azimuth) + ", front:" + frontVol + ", right:" + rightVol + ", backVol:" + backVol + ", leftVol:" + leftVol);
+  }
+
+  private void updateVolumeMatrix(double azimuth, double[][] volumeMatrix) {
+    double[] speakerPos = new double[MAX_CHANNEL_COUNT];
+    Vector3d[] speakerVec = new Vector3d[MAX_CHANNEL_COUNT];
+    Vector3d[] rotatedSpeakerVec = new Vector3d[MAX_CHANNEL_COUNT];
+
+    Vector3d rotatedFrontVec = rotate(azimuth, FRONT_VEC);
+/*
+        speakerPos[0] = Math.toRadians(-30);
+        speakerPos[1] = Math.toRadians(30);
+        speakerPos[2] = Math.toRadians(0);
+        speakerPos[3] = Math.toRadians(0);
+        speakerPos[4] = Math.toRadians(-120);
+        speakerPos[5] = Math.toRadians(120);
+*/
+
+    speakerPos[0] = Math.toRadians(-45);
+    speakerPos[1] = Math.toRadians(45);
+    speakerPos[2] = Math.toRadians(0);
+    speakerPos[3] = Math.toRadians(0);
+    speakerPos[4] = Math.toRadians(-135);
+    speakerPos[5] = Math.toRadians(135);
+    speakerPos[6] = Math.toRadians(-90);
+    speakerPos[7] = Math.toRadians(90);
+
+    for(int i = 0; i < DEFAULT_CHANNEL_COUNT; i++) {
+      speakerVec[i] = rotate(speakerPos[i], FRONT_VEC);
+    }
+
+    for(int i = 0; i < DEFAULT_CHANNEL_COUNT; i++) {
+      if(HAS_LFE && i == LFE_CHANNEL_ID)
+        continue;
+
+      rotatedSpeakerVec[i] = rotate(speakerPos[i], rotatedFrontVec);
+    }
+
+
+
+
+    for(int i = 0; i < DEFAULT_CHANNEL_COUNT; i++) {
+      if(HAS_LFE && i == LFE_CHANNEL_ID)
+        continue;
+
+      DegreeDiff[] degreeDiffArrayL = new DegreeDiff[MAX_CHANNEL_COUNT];
+      DegreeDiff[] degreeDiffArrayR = new DegreeDiff[MAX_CHANNEL_COUNT];
+      int degreeDiffArrayCountL = 0;
+      int degreeDiffArrayCountR = 0;
+
+      for (int speakerPosID = 0; speakerPosID < DEFAULT_CHANNEL_COUNT; speakerPosID++) {
+        if(HAS_LFE && speakerPosID == LFE_CHANNEL_ID)
+          continue;
+
+        //double dotValue = rotatedSpeakerVec[i].dot(speakerVec[speakerPosID]);
+        Vector3d crossVec = new Vector3d();
+        crossVec.cross(rotatedSpeakerVec[i], speakerVec[speakerPosID]);
+        double angleValue = rotatedSpeakerVec[i].angle(speakerVec[speakerPosID]);
+        //if(dotValue <= 0)
+        //continue;
+
+        DegreeDiff degreeDiff = new DegreeDiff();
+        //degreeDiff.dotValue = dotValue;
+        degreeDiff.crossValue = crossVec.y;
+        degreeDiff.angleValue = angleValue;
+        degreeDiff.speakerIndex = speakerPosID;
+
+        if(degreeDiff.angleValue == 0 /*|| Math.abs(degreeDiff.dotValue) < 0.001*/) {
+          degreeDiffArrayCountL = 0;
+          degreeDiffArrayCountR = 0;
+          break;
+        }
+        //Select the nearest speaker from left
+        else if(degreeDiff.crossValue < 0) {
+          orderInsert(degreeDiffArrayL, 0, degreeDiffArrayCountL, degreeDiff);
+          degreeDiffArrayCountL++;
+        }
+        //Select the nearest speaker from right
+        else {
+          orderInsert(degreeDiffArrayR, 0, degreeDiffArrayCountR, degreeDiff);
+          degreeDiffArrayCountR++;
+        }
+      }
+
+      if(degreeDiffArrayCountL != 0 && degreeDiffArrayCountR != 0) {
+        //Calculate volume distribution
+        int speakerIndex0 = degreeDiffArrayL[0].speakerIndex;
+        double angle0 = degreeDiffArrayL[0].angleValue;
+        //double dot0 = degreeDiffArrayL[0].dotValue;
+        int speakerIndex1 = degreeDiffArrayR[0].speakerIndex;
+        double angle1 = degreeDiffArrayR[0].angleValue;
+        //double dot1 = degreeDiffArrayR[0].dotValue;
+
+        //double actAngle0 = Math.sin(angle0);
+        //double actAngle1 = Math.cos(angle1);
+        double speaker0Vol = angle1 / (angle0 + angle1);
+        double speaker1Vol = angle0 / (angle0 + angle1);
+        //double speaker0ActVol = Math.sin(speaker0Vol * Math.PI / 2);
+        //double speaker1ActVol = Math.cos(speaker0Vol * Math.PI / 2);
+
+        //double speaker0Vol = dot0 / (dot0 + dot1);
+        //double speaker1Vol = dot1 / (dot0 + dot1);
+
+        volumeMatrix[i][speakerIndex0] = speaker0Vol;
+        volumeMatrix[i][speakerIndex1] = speaker1Vol;
+
+        for(int j = 0; j < DEFAULT_CHANNEL_COUNT; j++) {
+          if(j == speakerIndex0 || j == speakerIndex1)
+            continue;
+
+          if(HAS_LFE && j == LFE_CHANNEL_ID)
+            continue;
+
+          volumeMatrix[i][j] = 0;
+        }
+      }
+      else {
+        volumeMatrix[i][i] = 1;
+
+        for(int j = 0; j < DEFAULT_CHANNEL_COUNT; j++) {
+          if(j == i)
+            continue;
+
+          if(HAS_LFE && j == LFE_CHANNEL_ID)
+            continue;
+
+          volumeMatrix[i][j] = 0;
+        }
+      }
+    }
+
+    if(HAS_LFE)
+      volumeMatrix[LFE_CHANNEL_ID][LFE_CHANNEL_ID] = 1;
+  }
+
+  private Vector3d rotate(double theta, Vector3d in) {
+    double cosTheta = Math.cos(theta);
+    double sinTheta = Math.sin(theta);
+    Vector3d out = new Vector3d();
+    out.x = in.x * cosTheta + in.z * sinTheta;
+    out.y = in.y;
+    out.z = -in.x * sinTheta + in.z * cosTheta;
+    out.normalize();
+    return out;
+  }
+
+  private int orderInsert(DegreeDiff[] arr, int first, int last, DegreeDiff target) {
+    int i = last;
+    while((i > first) && (target.angleValue < arr[i - 1].angleValue)) {
+      //while((i > first) && (target.dotValue > arr[i - 1].dotValue)) {
+      arr[i] = arr[i - 1];
+      i = i - 1;
+    }
+    arr[i] = target;
+    return i;
+  }
 
   // Fields used only for ad playback. The ads loader is loaded via reflection.
 

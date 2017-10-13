@@ -32,5 +32,62 @@
         "extension": "mpd"
       }
     ]
+  },
+
+  {
+    "name": "SmoothStreaming",
+    "samples": [
+      {
+        "name": "Super speed",
+        "uri": "http://playready.directtaps.net/smoothstreaming/SSWSS720H264/SuperSpeedway_720.ism"
+      },
+      {
+        "name": "Super speed (PlayReady)",
+        "uri": "http://playready.directtaps.net/smoothstreaming/SSWSS720H264PR/SuperSpeedway_720.ism",
+        "drm_scheme": "playready"
+      }
+    ]
+  },
+
+  {
+    "name": "Widevine HDCP Capabilities Tests",
+    "samples": [
+      {
+        "name": "WV: HDCP: None (not required)",
+        "uri": "https://storage.googleapis.com/wvmedia/cenc/h264/tears/tears.mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://proxy.uat.widevine.com/proxy?video_id=HDCP_None&provider=widevine_test"
+      },
+      {
+        "name": "WV: HDCP: 1.0 required",
+        "uri": "https://storage.googleapis.com/wvmedia/cenc/h264/tears/tears.mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://proxy.uat.widevine.com/proxy?video_id=HDCP_V1&provider=widevine_test"
+      },
+      {
+        "name": "WV: HDCP: 2.0 required",
+        "uri": "https://storage.googleapis.com/wvmedia/cenc/h264/tears/tears.mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://proxy.uat.widevine.com/proxy?video_id=HDCP_V2&provider=widevine_test"
+      },
+      {
+        "name": "WV: HDCP: 2.1 required",
+        "uri": "https://storage.googleapis.com/wvmedia/cenc/h264/tears/tears.mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://proxy.uat.widevine.com/proxy?video_id=HDCP_V2_1&provider=widevine_test"
+      },
+      {
+        "name": "WV: HDCP: 2.2 required",
+        "uri": "https://storage.googleapis.com/wvmedia/cenc/h264/tears/tears.mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://proxy.uat.widevine.com/proxy?video_id=HDCP_V2_2&provider=widevine_test"
+      },
+      {
+        "name": "WV: HDCP: No digital output",
+        "uri": "https://storage.googleapis.com/wvmedia/cenc/h264/tears/tears.mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://proxy.uat.widevine.com/proxy?video_id=HDCP_NO_DIGTAL_OUTPUT&provider=widevine_test"
+      }
+    ]
   }
 ]

@@ -2,6 +2,7 @@
 
 The example is based on Google's ExoPlayer release 2.
 It demonstrates streaming a MKV / WEBM content with H264 / VP8 and an 8 channel Opus audio track to Android devices.
+However, it is recommanded to use Webm container with VP8 and 8 channel Opus audio track.
 For preview, make sure "Auto Rotate" is enabled on your Android device.
 Please hold your Android device in landscape left, and turn your body left and right to change the azimuth.
 

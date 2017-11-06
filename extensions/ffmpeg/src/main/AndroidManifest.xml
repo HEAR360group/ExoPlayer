@@ -14,4 +14,7 @@
      limitations under the License.
 -->
 
-<manifest package="com.google.android.exoplayer2.ext.ffmpeg"/>
+<manifest package="com.google.android.exoplayer2.ext.ffmpeg"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<uses-sdk android:minSdkVersion="19" android:targetSdkVersion="25"/>
+</manifest>

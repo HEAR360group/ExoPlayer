@@ -42,6 +42,7 @@ import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.EventListener;
@@ -395,6 +396,20 @@ public class PlayerActivity extends Activity implements OnClickListener, EventLi
 
     if(HAS_LFE)
       volumeMatrix[LFE_CHANNEL_ID][LFE_CHANNEL_ID] = 1;
+
+    Format format = player.getAudioFormat();
+    if(format != null) {
+      int channelCount = format.channelCount;
+      //For stereo sound track, split the center SPL to L and R and disable the center
+      if(channelCount == 2) {
+        for(int i = 0; i < volumeMatrix.length; i++) {
+          double centerVolume = volumeMatrix[i][2];
+          volumeMatrix[i][2] = 0;
+          volumeMatrix[i][0] += (centerVolume / 2.0);
+          volumeMatrix[i][1] += (centerVolume / 2.0);
+        }
+      }
+    }
   }
 
   private Vector3d rotate(double theta, Vector3d in) {

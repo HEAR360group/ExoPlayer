@@ -150,7 +150,12 @@ public class MediaCodecAudioRenderer extends MediaCodecRenderer implements Media
     MediaCodecInfo decoderInfo = mediaCodecSelector.getDecoderInfo(mimeType, false);
     if (decoderInfo == null) {
       return FORMAT_UNSUPPORTED_SUBTYPE;
+    } else {
+      if(mimeType != null && mimeType.contains("ac3")) {
+        return FORMAT_UNSUPPORTED_SUBTYPE;
+      }
     }
+
     // Note: We assume support for unknown sampleRate and channelCount.
     boolean decoderCapable = Util.SDK_INT < 21
         || ((format.sampleRate == Format.NO_VALUE

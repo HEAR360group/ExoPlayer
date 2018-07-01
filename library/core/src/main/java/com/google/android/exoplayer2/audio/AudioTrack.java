@@ -178,11 +178,13 @@ public final class AudioTrack {
   /**
    * A minimum length for the {@link android.media.AudioTrack} buffer, in microseconds.
    */
-  private static final long MIN_BUFFER_DURATION_US = 250000;
+//  private static final long MIN_BUFFER_DURATION_US = 250000;
+  private static final long MIN_BUFFER_DURATION_US = 62500;
   /**
    * A maximum length for the {@link android.media.AudioTrack} buffer, in microseconds.
    */
-  private static final long MAX_BUFFER_DURATION_US = 750000;
+//  private static final long MAX_BUFFER_DURATION_US = 750000;
+  private static final long MAX_BUFFER_DURATION_US = 187500;
   /**
    * The length for passthrough {@link android.media.AudioTrack} buffers, in microseconds.
    */
@@ -191,8 +193,8 @@ public final class AudioTrack {
    * A multiplication factor to apply to the minimum buffer size requested by the underlying
    * {@link android.media.AudioTrack}.
    */
-  private static final int BUFFER_MULTIPLICATION_FACTOR = 4;
-
+//  private static final int BUFFER_MULTIPLICATION_FACTOR = 4;
+  private static final int BUFFER_MULTIPLICATION_FACTOR = 1;
   /**
    * @see android.media.AudioTrack#PLAYSTATE_STOPPED
    */

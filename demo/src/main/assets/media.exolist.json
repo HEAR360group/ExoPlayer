@@ -15,8 +15,12 @@
         "uri": "http://hear360.co/Grayson/3D/Lazer.webm"
       },
       {
-        "name": "LAPhil (H264, Opus)",
-        "uri": "http://hear360.co/LAPhil/LAPhil.mkv"
+        "name": "Major Lazer 4ch (VP9, Opus)",
+        "uri": "http://hear360.co/MajorLazer4ChVideo.webm"
+      },
+      {
+        "name": "Major Lazer 8ch (VP9, Opus)",
+        "uri": "http://hear360.co/MajorLazerH360webplayerVP9.webm"
       },
       {
         "name": "Google Glass (MP4,H264)",

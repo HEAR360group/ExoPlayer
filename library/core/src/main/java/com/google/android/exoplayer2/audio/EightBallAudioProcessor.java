@@ -80,7 +80,7 @@ import java.util.Arrays;
   @Override
   public boolean isActive() {
     //return false;
-    return encoding != C.ENCODING_INVALID && channelCount == 8;
+    return encoding != C.ENCODING_INVALID && (channelCount == 8 || channelCount == 4);
   }
 
   @Override

@@ -1816,9 +1816,9 @@ public final class MatroskaExtractor implements Extractor {
         byte[] vorbisInfo = new byte[vorbisInfoLength];
         System.arraycopy(codecPrivate, offset, vorbisInfo, 0, vorbisInfoLength);
         offset += vorbisInfoLength;
-        if (codecPrivate[offset] != 0x03) {
-          throw new ParserException("Error parsing vorbis codec private");
-        }
+//        if (codecPrivate[offset] != 0x03) {
+//          throw new ParserException("Error parsing vorbis codec private");
+//        }
         offset += vorbisSkipLength;
         if (codecPrivate[offset] != 0x05) {
           throw new ParserException("Error parsing vorbis codec private");

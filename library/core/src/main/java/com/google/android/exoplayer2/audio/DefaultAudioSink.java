@@ -239,6 +239,7 @@ public final class DefaultAudioSink implements AudioSink {
   @Nullable private final AudioCapabilities audioCapabilities;
   private final AudioProcessorChain audioProcessorChain;
   private final boolean enableFloatOutput;
+  private final HPSAudioProcessor hpsAudioProcessor;
   private final ChannelMappingAudioProcessor channelMappingAudioProcessor;
   private final TrimmingAudioProcessor trimmingAudioProcessor;
   private final AudioProcessor[] toIntPcmAvailableAudioProcessors;
@@ -344,13 +345,16 @@ public final class DefaultAudioSink implements AudioSink {
     releasingConditionVariable = new ConditionVariable(true);
     audioTrackPositionTracker = new AudioTrackPositionTracker(new PositionTrackerListener());
     channelMappingAudioProcessor = new ChannelMappingAudioProcessor();
+    hpsAudioProcessor = new HPSAudioProcessor();
     trimmingAudioProcessor = new TrimmingAudioProcessor();
     ArrayList<AudioProcessor> toIntPcmAudioProcessors = new ArrayList<>();
     Collections.addAll(
         toIntPcmAudioProcessors,
         new ResamplingAudioProcessor(),
         channelMappingAudioProcessor,
-        trimmingAudioProcessor);
+        hpsAudioProcessor,
+        trimmingAudioProcessor
+    );
     Collections.addAll(toIntPcmAudioProcessors, audioProcessorChain.getAudioProcessors());
     toIntPcmAvailableAudioProcessors = toIntPcmAudioProcessors.toArray(new AudioProcessor[0]);
     toFloatPcmAvailableAudioProcessors = new AudioProcessor[] {new FloatResamplingAudioProcessor()};

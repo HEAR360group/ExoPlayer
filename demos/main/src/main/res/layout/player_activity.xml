@@ -27,7 +27,7 @@
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="#88000000"
+      android:background="#33000000"
       android:orientation="vertical">
 
     <TextView android:id="@+id/debug_text_view"
@@ -40,7 +40,7 @@
 
     <LinearLayout android:id="@+id/controls_root"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="horizontal"
         android:visibility="gone">
 
@@ -51,6 +51,34 @@
           android:enabled="false"/>
 
     </LinearLayout>
+
+<!--    <AbsoluteLayout android:id="@+id/controls_roots"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:orientation="horizontal">-->
+
+<!--      <Switch-->
+<!--          android:id="@+id/sw_sonami"-->
+<!--          android:layout_width="wrap_content"-->
+<!--          android:layout_height="wrap_content"-->
+<!--          android:text="SONAMI:"-->
+<!--          android:checked="false" />-->
+
+<!--      <Switch-->
+<!--          android:id="@+id/sw_solo"-->
+<!--          android:layout_width="wrap_content"-->
+<!--          android:layout_height="wrap_content"-->
+<!--          android:text="SONAMI:"-->
+<!--          android:checked="false" />-->
+
+<!--      <Switch-->
+<!--          android:id="@+id/sw_eq"-->
+<!--          android:layout_width="wrap_content"-->
+<!--          android:layout_height="wrap_content"-->
+<!--          android:text="SONAMI:"-->
+<!--          android:checked="false" />-->
+
+<!--    </AbsoluteLayout>-->
 
   </LinearLayout>
 

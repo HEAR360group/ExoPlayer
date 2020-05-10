@@ -32,7 +32,7 @@ import java.util.Arrays;
 @TargetApi(21)
 public final class AudioCapabilities {
 
-  private static final int DEFAULT_MAX_CHANNEL_COUNT = 8;
+  private static final int DEFAULT_MAX_CHANNEL_COUNT = 13;
 
   /** The minimum audio capabilities supported by all devices. */
   public static final AudioCapabilities DEFAULT_AUDIO_CAPABILITIES =

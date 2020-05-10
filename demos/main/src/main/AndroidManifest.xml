@@ -36,11 +36,13 @@
       android:allowBackup="false"
       android:requestLegacyExternalStorage="true"
       android:name="com.google.android.exoplayer2.demo.DemoApplication"
+
       tools:ignore="UnusedAttribute">
 
     <activity android:name="com.google.android.exoplayer2.demo.SampleChooserActivity"
         android:configChanges="keyboardHidden"
         android:label="@string/application_name"
+        android:screenOrientation="landscape"
         android:theme="@style/Theme.AppCompat">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -65,6 +67,7 @@
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
         android:launchMode="singleTop"
         android:label="@string/application_name"
+        android:screenOrientation="landscape"
         android:theme="@style/PlayerTheme">
       <intent-filter>
         <action android:name="com.google.android.exoplayer.demo.action.VIEW"/>

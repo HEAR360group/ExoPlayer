@@ -71,7 +71,7 @@ public class DefaultLoadControl implements LoadControl {
   public static final int DEFAULT_VIDEO_BUFFER_SIZE = 500 * C.DEFAULT_BUFFER_SEGMENT_SIZE;
 
   /** A default size in bytes for an audio buffer. */
-  public static final int DEFAULT_AUDIO_BUFFER_SIZE = 54 * C.DEFAULT_BUFFER_SEGMENT_SIZE;
+  public static final int DEFAULT_AUDIO_BUFFER_SIZE = 216 * C.DEFAULT_BUFFER_SEGMENT_SIZE;
 
   /** A default size in bytes for a text buffer. */
   public static final int DEFAULT_TEXT_BUFFER_SIZE = 2 * C.DEFAULT_BUFFER_SEGMENT_SIZE;

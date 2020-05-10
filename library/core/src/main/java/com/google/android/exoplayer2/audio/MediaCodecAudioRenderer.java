@@ -578,6 +578,7 @@ public class MediaCodecAudioRenderer extends MediaCodecRenderer implements Media
       }
     }
     int channelCount = mediaFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
+//    mediaFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 13);
     int sampleRate = mediaFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
     int[] channelMap;
     if (codecNeedsDiscardChannelsWorkaround && channelCount == 6 && inputFormat.channelCount < 6) {
@@ -592,7 +593,8 @@ public class MediaCodecAudioRenderer extends MediaCodecRenderer implements Media
     try {
       audioSink.configure(
           encoding,
-          channelCount,
+          inputFormat.channelCount,
+//          channelCount,
           sampleRate,
           0,
           channelMap,

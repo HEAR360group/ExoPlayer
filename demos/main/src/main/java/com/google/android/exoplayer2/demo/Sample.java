@@ -55,7 +55,10 @@ import java.util.UUID;
           DrmInfo.createFromIntent(intent, extrasKeySuffix),
           adTagUri,
           /* sphericalStereoMode= */ null,
-          SubtitleInfo.createFromIntent(intent, extrasKeySuffix));
+          SubtitleInfo.createFromIntent(intent, extrasKeySuffix),
+      0,
+      1,
+      1);
     }
 
     public final Uri uri;
@@ -65,6 +68,9 @@ import java.util.UUID;
     public final Uri adTagUri;
     @Nullable public final String sphericalStereoMode;
     @Nullable SubtitleInfo subtitleInfo;
+    public final int channelsMask;
+    public final double gainHPSOn;
+    public final double gainHPSOff;
 
     public UriSample(
         String name,
@@ -74,7 +80,10 @@ import java.util.UUID;
         DrmInfo drmInfo,
         Uri adTagUri,
         @Nullable String sphericalStereoMode,
-        @Nullable SubtitleInfo subtitleInfo) {
+        @Nullable SubtitleInfo subtitleInfo,
+        int channelsMask,
+        double gainHPSOn,
+        double gainHPSOff) {
       super(name);
       this.uri = uri;
       this.extension = extension;
@@ -83,6 +92,9 @@ import java.util.UUID;
       this.adTagUri = adTagUri;
       this.sphericalStereoMode = sphericalStereoMode;
       this.subtitleInfo = subtitleInfo;
+      this.channelsMask = channelsMask;
+      this.gainHPSOn = gainHPSOn;
+      this.gainHPSOff = gainHPSOff;
     }
 
     @Override

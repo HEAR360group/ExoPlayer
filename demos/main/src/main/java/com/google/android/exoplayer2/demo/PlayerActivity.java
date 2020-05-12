@@ -21,17 +21,23 @@ import android.media.MediaDrm;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.C.ContentType;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -41,6 +47,7 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.RenderersFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
+import com.google.android.exoplayer2.audio.HPSAudioProcessor;
 import com.google.android.exoplayer2.demo.Sample.UriSample;
 import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
 import com.google.android.exoplayer2.drm.DrmSessionManager;
@@ -87,7 +94,7 @@ import java.net.CookiePolicy;
 
 /** An activity that plays media using {@link SimpleExoPlayer}. */
 public class PlayerActivity extends AppCompatActivity
-    implements OnClickListener, PlaybackPreparer, PlayerControlView.VisibilityListener {
+    implements OnClickListener, CompoundButton.OnCheckedChangeListener, PlaybackPreparer, PlayerControlView.VisibilityListener {
 
   // Activity extras.
 
@@ -107,6 +114,12 @@ public class PlayerActivity extends AppCompatActivity
   public static final String ABR_ALGORITHM_EXTRA = "abr_algorithm";
   public static final String ABR_ALGORITHM_DEFAULT = "default";
   public static final String ABR_ALGORITHM_RANDOM = "random";
+
+  // SONAMI sample related extras.
+
+  public static final String CHANNELS_MASK_EXTRA = "channels_mask";
+  public static final String GAIN_HPS_ON = "gain_hps_on";
+  public static final String GAIN_HPS_OFF = "gain_hps_off";
 
   // Media item configuration extras.
 
@@ -146,6 +159,13 @@ public class PlayerActivity extends AppCompatActivity
   private TextView debugTextView;
   private boolean isShowingTrackSelectionDialog;
 
+  private Switch swSonami;
+  private Switch swChannels;
+  private Switch swEQ;
+  private RadioButton[] rbChannels;
+  private RadioButton rbAllChannel;
+  private ConstraintLayout layoutChannels;
+
   private DataSource.Factory dataSourceFactory;
   private SimpleExoPlayer player;
   private MediaSource mediaSource;
@@ -163,11 +183,18 @@ public class PlayerActivity extends AppCompatActivity
   private AdsLoader adsLoader;
   private Uri loadedAdTagUri;
 
+  //SONAMI related variables
+  private int channelsMask;
+  private double gainHPSOn;
+  private double gainHPSOff;
+
   // Activity lifecycle
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     Intent intent = getIntent();
+//    trackSelector.getCurrentMappedTrackInfo().getRendererCount();
+
     String sphericalStereoMode = intent.getStringExtra(SPHERICAL_STEREO_MODE_EXTRA);
     if (sphericalStereoMode != null) {
       setTheme(R.style.PlayerTheme_Spherical);
@@ -184,10 +211,49 @@ public class PlayerActivity extends AppCompatActivity
     selectTracksButton = findViewById(R.id.select_tracks_button);
     selectTracksButton.setOnClickListener(this);
 
+    swSonami = findViewById(R.id.sw_sonami);
+    swSonami.setOnCheckedChangeListener(this);
+    swChannels = findViewById(R.id.sw_channels);
+    swChannels.setOnCheckedChangeListener(this);
+    swEQ = findViewById(R.id.sw_eq);
+    swEQ.setOnCheckedChangeListener(this);
+
+    channelsMask = intent.getIntExtra(CHANNELS_MASK_EXTRA, 0);
+
+    layoutChannels = findViewById(R.id.channels_control);
+
+    rbChannels = new RadioButton[12];
+    rbChannels[0] = findViewById(R.id.rbLChannel);
+    rbChannels[1] = findViewById(R.id.rbRChannel);
+    rbChannels[2] = findViewById(R.id.rbCChannel);
+    rbChannels[3] = findViewById(R.id.rbLsChannel);
+    rbChannels[4] = findViewById(R.id.rbRsChannel);
+    rbChannels[5] = findViewById(R.id.rbLssChannel);
+    rbChannels[6] = findViewById(R.id.rbRssChannel);
+    rbChannels[7] = findViewById(R.id.rbLhChannel);
+    rbChannels[8] = findViewById(R.id.rbRhChannel);
+    rbChannels[9] = findViewById(R.id.rbLshChannel);
+    rbChannels[10] = findViewById(R.id.rbRshChannel);
+    rbChannels[11] = findViewById(R.id.rbTChannel);
+    for(int i = 0; i < rbChannels.length; i++) {
+      if((channelsMask & (1 << i)) != 0) {
+        rbChannels[i].setVisibility(View.VISIBLE);
+      }
+      else {
+        rbChannels[i].setVisibility(View.GONE);
+      }
+
+      rbChannels[i].setOnClickListener(this);
+    }
+//
+    rbAllChannel = findViewById(R.id.rbAllChannel);
+    rbAllChannel.setOnClickListener(this);
+
     playerView = findViewById(R.id.player_view);
     playerView.setControllerVisibilityListener(this);
     playerView.setErrorMessageProvider(new PlayerErrorMessageProvider());
     playerView.requestFocus();
+
     if (sphericalStereoMode != null) {
       int stereoMode;
       if (SPHERICAL_STEREO_MODE_MONO.equals(sphericalStereoMode)) {
@@ -219,6 +285,11 @@ public class PlayerActivity extends AppCompatActivity
       trackSelectorParameters = builder.build();
       clearStartPosition();
     }
+
+    gainHPSOn = intent.getDoubleExtra(GAIN_HPS_ON, 1.0);
+    gainHPSOff = intent.getDoubleExtra(GAIN_HPS_OFF, 1.0);
+
+    HPSAudioProcessor.setGain((float)gainHPSOn, (float)gainHPSOff);
   }
 
   @Override
@@ -329,6 +400,83 @@ public class PlayerActivity extends AppCompatActivity
               /* onDismissListener= */ dismissedDialog -> isShowingTrackSelectionDialog = false);
       trackSelectionDialog.show(getSupportFragmentManager(), /* tag= */ null);
     }
+    else if(view == rbAllChannel) {
+      //Solo off
+      for (int i = 0; i < rbChannels.length; i++) {
+        rbChannels[i].setChecked(false);
+      }
+      HPSAudioProcessor.setSoloChannel(4095);
+    }
+    else {
+      int selectedSoloChannelId = 0;
+      for (int i = 0; i < rbChannels.length; i++) {
+        if (rbChannels[i] == view) {
+          selectedSoloChannelId = i;
+        } else {
+          rbChannels[i].setChecked(false);
+          rbAllChannel.setChecked(false);
+        }
+      }
+      HPSAudioProcessor.setSoloChannel(1 << selectedSoloChannelId);
+    }
+  }
+
+  @Override
+  public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+    if(buttonView == swSonami) {
+      if(isChecked) {
+//        swChannels.setVisibility(View.VISIBLE);
+//        swEQ.setVisibility(View.VISIBLE);
+      }
+      else {
+//        swChannels.setVisibility(View.GONE);
+        swEQ.setVisibility(View.GONE);
+//        layoutChannels.setVisibility(View.GONE);
+        //layoutEQ.setVisibility(View.GONE);
+      }
+
+      HPSAudioProcessor.gIsSonamiOn = isChecked;
+    }
+    else if(buttonView == swChannels) {
+      if(isChecked) {
+        layoutChannels.setVisibility(View.VISIBLE);
+      }
+      else {
+        layoutChannels.setVisibility(View.GONE);
+      }
+    }
+    else if(buttonView == swEQ) {
+      if(isChecked) {
+        //layoutEQ.setVisibility(View.VISIBLE);
+      }
+      else {
+        //layoutEQ.setVisibility(View.GONE);
+      }
+    }
+//    else if(buttonView == swAllChannel) {
+//      if(isChecked) {
+//        //Solo off
+//        for (int i = 0; i < swEachChannels.length; i++) {
+//          swEachChannels[i].setChecked(false);
+//        }
+//      }
+////      else {
+//////        swAllChannel.setChecked(true);
+////      }
+//    }
+//    else {
+//      if(isChecked) {
+//        int selectedSoloChannelId = 0;
+//        for (int i = 0; i < swEachChannels.length; i++) {
+//          if (swEachChannels[i] == buttonView) {
+//            selectedSoloChannelId = i;
+//          } else {
+//            swEachChannels[i].setChecked(false);
+//            swAllChannel.setChecked(false);
+//          }
+//        }
+//      }
+//    }
   }
 
   // PlaybackControlView.PlaybackPreparer implementation
@@ -399,6 +547,8 @@ public class PlayerActivity extends AppCompatActivity
     }
     player.prepare(mediaSource, !haveStartPosition, false);
     updateButtonVisibility();
+
+
   }
 
   @Nullable

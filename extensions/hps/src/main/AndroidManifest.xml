@@ -16,5 +16,5 @@
 
 <manifest package="com.google.android.exoplayer2.ext.hps"
     xmlns:android="http://schemas.android.com/apk/res/android">
-<uses-sdk android:minSdkVersion="19" android:targetSdkVersion="25"/>
+<uses-sdk android:targetSdkVersion="25"/>
 </manifest>

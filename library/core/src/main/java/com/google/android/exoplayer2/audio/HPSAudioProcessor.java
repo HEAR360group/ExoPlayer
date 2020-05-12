@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
  * channels. This can be used to reorder, duplicate or discard channels.
  */
 @SuppressWarnings("nullness:initialization.fields.uninitialized")
-/* package */ final class HPSAudioProcessor extends BaseAudioProcessor {
+/* package */ public final class HPSAudioProcessor extends BaseAudioProcessor {
 
   @Nullable private int[] pendingOutputChannels;
   @Nullable private int[] outputChannels;
@@ -56,6 +56,48 @@ import androidx.annotation.Nullable;
   private int fBufSkyIndex = 0;
   private int curPage = 0;
 
+  private static float soloToMixGainEffectOn = 1.0f;
+  private static float allToMixGainEffectOn = 1.0f;
+  private static float soloToMixGainEffectOff = 1.0f;
+  private static float allToMixGainEffectOff = 1.0f;
+
+  private static boolean[] channelsEnabled = new boolean[12];
+
+//  public static final int FRONT_LEFT_CHANNEL_ID = 0;
+//  public static final int FRONT_RIGHT_CHANNEL_ID = 1;
+//  public static final int FRONT_CENTER_CHANNEL_ID = 2;
+//  public static final int REAR_LEFT_CHANNEL_ID = 3;
+
+  private static boolean isSoloOn = false;
+
+  public static boolean gIsSonamiOn = false;
+
+  public static void setSoloChannel(int index) {
+    if(index == 4095) {
+      isSoloOn = false;
+    }
+    else {
+      isSoloOn = true;
+    }
+
+    for(int channelId = 0; channelId < 12; channelId++) {
+      channelsEnabled[channelId] = false;
+    }
+
+    for(int channelId = 0; channelId < 12; channelId++) {
+      if((index & (1 << channelId)) == (1 << channelId)) {
+        channelsEnabled[channelId] = true;
+      }
+    }
+  }
+
+  public static void setGain(float gainHPSOn, float gainHPSOff) {
+    soloToMixGainEffectOn = 25.0f * gainHPSOn / 3.0f;
+    allToMixGainEffectOn = 12.5f * gainHPSOn / 3.0f;
+    soloToMixGainEffectOff = 5.0f * gainHPSOff / 3.0f;
+    allToMixGainEffectOff = 2.5f * gainHPSOff / 3.0f;
+  }
+
   public HPSAudioProcessor() {
     boolean result = hpsLibrary.isAvailable();
 
@@ -65,10 +107,16 @@ import androidx.annotation.Nullable;
     buffer = EMPTY_BUFFER;
     outputBuffer = EMPTY_BUFFER;
 
-    inputBufEarth = new float[40000];
-    inputBufSky = new float[40000];
-    outputBufEarth = new float[40000];
-    outputBufSky = new float[40000];
+    inputBufEarth = new float[10000];
+    inputBufSky = new float[10000];
+    outputBufEarth = new float[10000];
+    outputBufSky = new float[10000];
+
+    //Reset global state
+    gIsSonamiOn = false;
+    for(int i = 0; i < channelsEnabled.length; i++) {
+      channelsEnabled[i] = true;
+    }
   }
 
   /**
@@ -141,42 +189,108 @@ import androidx.annotation.Nullable;
       float inputFloat = (float)input / 32767.0f;
       int currentChannelIndex = fBufIndex % channelCount;
       if(currentChannelIndex < 8) {
-        inputBufEarth[fBufEarthIndex++] = inputFloat;
-      }
-      else {
-        if(currentChannelIndex == 12) {
-          inputBufSky[fBufSkyIndex++] = 0;
+        if(currentChannelIndex < 3) {
+          if(channelsEnabled[currentChannelIndex]) {
+            inputBufEarth[fBufEarthIndex++] = inputFloat;
+          }
+          else {
+            inputBufEarth[fBufEarthIndex++] = 0;
+          }
+        }
+        else if(currentChannelIndex == 3) {
+          inputBufEarth[fBufEarthIndex++] = inputFloat;
         }
         else {
-          inputBufSky[fBufSkyIndex++] = inputFloat;
+          if(channelsEnabled[currentChannelIndex - 1]) {
+            inputBufEarth[fBufEarthIndex++] = inputFloat;
+          }
+          else {
+            inputBufEarth[fBufEarthIndex++] = 0;
+          }
         }
+      }
+      else {
+        if(currentChannelIndex < 11) {
+          if(channelsEnabled[currentChannelIndex - 1]) {
+            inputBufSky[fBufSkyIndex++] = inputFloat;
+          }
+          else {
+            inputBufSky[fBufSkyIndex++] = 0;
+          }
 
-        if(currentChannelIndex == 10) {
-          inputBufSky[fBufSkyIndex++] = 0;
+          if(currentChannelIndex == 10) {
+            inputBufSky[fBufSkyIndex++] = 0;
+          }
+        }
+        else {
+          if(channelsEnabled[currentChannelIndex - 1]) {
+            inputBufSky[fBufSkyIndex++] = inputFloat;
+          }
+          else {
+            inputBufSky[fBufSkyIndex++] = 0;
+          }
         }
       }
       fBufIndex++;
       //(8byte per 8bits)16bit in total, multiple by 8 channels
       position += 2;
     }
-    curPage++;
+//    curPage++;
 
 //    if(curPage == 2) {
 //
-      if(fBufEarthIndex != 0) {
-//        for(int i = 0; i < frameCount; i++) {
-//          outputBufEarth[i * 2] = inputBufEarth[i * earthChannelCount];
-//          outputBufEarth[i * 2 + 1] = inputBufEarth[i * earthChannelCount + 1];
-//          //        outputBufEarth[i] = inputBufEarth[i];
-//        }
+    if(gIsSonamiOn) {
+      if (fBufEarthIndex != 0) {
         //hpsAudioDSPEarth.ProcessInPlaceInterleavedFloat(inputBufEarth, channelCount, frameCount, true, true);
-              hpsAudioDSPEarth.ProcessOutOfPlaceInterleavedFloat(0, inputBufEarth, outputBufEarth, earthChannelCount, 2, false, frameCount);
+        hpsAudioDSPEarth.ProcessOutOfPlaceInterleavedFloat(0, inputBufEarth, outputBufEarth, earthChannelCount, 2, false, frameCount);
       }
 
-      if(fBufSkyIndex != 0) {
-              hpsAudioDSPSky.ProcessOutOfPlaceInterleavedFloat(0, inputBufSky, outputBufSky, skyChannelCount, 2, false, frameCount);
+      if (fBufSkyIndex != 0) {
+        hpsAudioDSPSky.ProcessOutOfPlaceInterleavedFloat(0, inputBufSky, outputBufSky, skyChannelCount, 2, false, frameCount);
       }
-      curPage = 0;
+    }
+    else {
+      if (fBufEarthIndex != 0) {
+        for (int i = 0; i < frameCount; i++) {
+          //L&R
+          outputBufEarth[i * 2] = inputBufEarth[i * earthChannelCount];
+          outputBufEarth[i * 2 + 1] = inputBufEarth[i * earthChannelCount + 1];
+
+          if (earthChannelCount >= 6) {
+            //C
+            outputBufEarth[i * 2] += inputBufEarth[i * earthChannelCount + 2] * 0.5f;
+            outputBufEarth[i * 2 + 1] += inputBufEarth[i * earthChannelCount + 2] * 0.5f;
+            //LFE
+            outputBufEarth[i * 2] += inputBufEarth[i * earthChannelCount + 3] * 0.5f;
+            outputBufEarth[i * 2 + 1] += inputBufEarth[i * earthChannelCount + 3] * 0.5f;
+            //Ls&Rs
+            outputBufEarth[i * 2] += inputBufEarth[i * earthChannelCount + 4];
+            outputBufEarth[i * 2 + 1] += inputBufEarth[i * earthChannelCount + 5];
+          }
+
+          if (earthChannelCount >= 8) {
+            //Lss&Rss
+            outputBufEarth[i * 2] += inputBufEarth[i * earthChannelCount + 6];
+            outputBufEarth[i * 2 + 1] += inputBufEarth[i * earthChannelCount + 7];
+          }
+        }
+      }
+
+      if (fBufSkyIndex != 0) {
+        for (int i = 0; i < frameCount; i++) {
+          //LH&RH
+          outputBufSky[i * 2] = inputBufSky[i * skyChannelCount];
+          outputBufSky[i * 2 + 1] = inputBufSky[i * skyChannelCount + 1];
+          //LsH&RsH
+          outputBufSky[i * 2] += inputBufSky[i * skyChannelCount + 2];
+          outputBufSky[i * 2 + 1] += inputBufSky[i * skyChannelCount + 4];
+          //Top
+          outputBufSky[i * 2] += inputBufSky[i * skyChannelCount + 5] * 0.5f;
+          outputBufSky[i * 2 + 1] += inputBufSky[i * skyChannelCount + 5] * 0.5f;
+        }
+      }
+    }
+//      curPage = 0;
 //      fBufIndex = 0;
       fBufEarthIndex = 0;
       fBufSkyIndex = 0;
@@ -192,9 +306,11 @@ import androidx.annotation.Nullable;
 //      }
 //    }
 
+    float gain = (gIsSonamiOn ? (isSoloOn ? soloToMixGainEffectOn: allToMixGainEffectOn) : (isSoloOn ? soloToMixGainEffectOff : allToMixGainEffectOff)) / channelCount;
+
     for(int i = 0; i < frameCount; i++) {
-      float l = (outputBufEarth[i * 2] + outputBufSky[i * 2]) / 4.5f;
-      float r = (outputBufEarth[i * 2 + 1] + outputBufSky[i * 2 + 1]) / 4.5f;
+      float l = (outputBufEarth[i * 2] + outputBufSky[i * 2]) * gain;
+      float r = (outputBufEarth[i * 2 + 1] + outputBufSky[i * 2 + 1]) * gain;
 
       short inputFrontL = (short)(l * 32767.0f);
       short inputFrontR = (short)(r * 32767.0f);

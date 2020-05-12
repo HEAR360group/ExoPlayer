@@ -269,11 +269,13 @@ namespace hear360_plugin_generic_dll_hps
     }
     else
     {
-      HPS_Headtracking_ProcessOutOfPlaceInterleaved(pprivate->headtracking_instance_handle, azimuth, inBuf, pprivate->buffer.htBufInterleaved, inputChannelCount, bufFrames);
+      //HPS_Headtracking_ProcessOutOfPlaceInterleaved(pprivate->headtracking_instance_handle, azimuth, inBuf, pprivate->buffer.htBufInterleaved, inputChannelCount, bufFrames);
     }
 
     //HPS_Headtracking_ProcessOutOfPlaceInterleaved(pprivate->headtracking_instance_handle, azimuth, inBuf, outBuf, inputChannelCount, bufFrames);
-    HPS_HRIRFolddown_ProcessOutOfPlaceInterleaved(pprivate->folddown_instance_handle, pprivate->buffer.htBufInterleaved, outBuf, pprivate->isHeight ? 6 : 8, outputChannelCount, bufFrames, true, true);
+    HPS_HRIRFolddown_ProcessOutOfPlaceInterleaved(pprivate->folddown_instance_handle, inBuf, outBuf, inputChannelCount, outputChannelCount, bufFrames, true, true);
+
+    // HPS_HRIRFolddown_ProcessOutOfPlaceInterleaved(pprivate->folddown_instance_handle, pprivate->buffer.htBufInterleaved, outBuf, pprivate->isHeight ? 6 : 8, outputChannelCount, bufFrames, true, true);
     //HPS_HRIRFolddown_ProcessOutOfPlaceInterleaved(pprivate->folddown_instance_handle, inBuf, outBuf, inputChannelCount, outputChannelCount, bufFrames, true, true);
     //HPS_HRIRFolddown_ProcessOutOfPlaceInterleaved(pprivate->folddown_instance_handle, inBuf, outBuf, 8, bufFrames, true, true);
 

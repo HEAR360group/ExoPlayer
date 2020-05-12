@@ -3,49 +3,105 @@
     "name": "SONAMI",
     "samples": [
       {
-        "name": "Come Together (5.1)",
-        "uri": "https://hear360.co/SONAMI/ComeTogether.mkv",
-        "extension": "mkv"
+        "name": "Mad Max: Fury Road (11.1 PCM)",
+        "uri": "https://hear360.co/SONAMI/MadMax.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.14,
+        "gainHPSOff": 1.07
+      },
+      {
+        "name": "Batman: The Dark Knight Rises (5.1 PCM)",
+        "uri": "https://hear360.co/SONAMI/DarkKnight.mkv",
+        "extension": "mkv",
+        "channelsMask": 31,
+        "gainHPSOn": 1.0,
+        "gainHPSOff": 1.0
       },
       {
         "name": "Apex Legends (7.1)",
         "uri": "https://hear360.co/SONAMI/ApexLegends.mkv",
-        "extension": "mkv"
+        "extension": "mkv",
+        "channelsMask": 127,
+        "gainHPSOn": 1.2,
+        "gainHPSOff": 1.1
       },
       {
-        "name": "Expendables3 (11.1)",
-        "uri": "https://hear360.co/SONAMI/Expendables3.mkv",
-        "extension": "mkv"
+        "name": "Baby Driver (11.1 PCM)",
+        "uri": "https://hear360.co/SONAMI/BabyDriver.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.4,
+        "gainHPSOff": 1.125
       },
       {
-        "name": "Expendables3 (16Bit 11.1)",
-        "uri": "https://hear360.co/SONAMI/Expendables16.mkv",
-        "extension": "mkv"
+        "name": "Bruce Springsteen \"Mansion On The Hill\" (5.1)",
+        "uri": "https://hear360.co/SONAMI/Mansion.mkv",
+        "extension": "mkv",
+        "channelsMask": 31,
+        "gainHPSOn": 0.5,
+        "gainHPSOff": 0.5
       },
       {
-        "name": "Expendables3 (Vorbis 11.1 320Kbps/stereo)",
-        "uri": "https://hear360.co/SONAMI/Expendables32.mkv",
-        "extension": "mkv"
+        "name": "Come Together (5.1)",
+        "uri": "https://hear360.co/SONAMI/ComeTogether.mkv",
+        "extension": "mkv",
+        "channelsMask": 31,
+        "gainHPSOn": 1.0,
+        "gainHPSOff": 1.0
+      }
+    ]
+  },
+  {
+    "name": "SONAMI Local",
+    "samples": [
+      {
+        "name": "Mad Max: Fury Road (11.1 PCM)",
+        "uri": "http://192.168.86.146:8080/MadMax.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.14,
+        "gainHPSOff": 1.07
       },
       {
-        "name": "Expendables3 (16Bit Vorbis 11.1 320Kbps/stereo)",
-        "uri": "https://hear360.co/SONAMI/Expendables36.mkv",
-        "extension": "mkv"
+        "name": "Batman: The Dark Knight Rises (5.1 PCM)",
+        "uri": "http://192.168.86.146:8080/DarkKnight.mkv",
+        "extension": "mkv",
+        "channelsMask": 31,
+        "gainHPSOn": 1.0,
+        "gainHPSOff": 1.0
       },
       {
-        "name": "Expendables3 (Vorbis 11.1 256Kbps/stereo)",
-        "uri": "https://hear360.co/SONAMI/Expendables33.mkv",
-        "extension": "mkv"
+        "name": "Apex Legends (7.1)",
+        "uri": "http://192.168.86.146:8080/ApexLegends.mkv",
+        "extension": "mkv",
+        "channelsMask": 127,
+        "gainHPSOn": 1.2,
+        "gainHPSOff": 1.1
       },
       {
-        "name": "Expendables3 (Vorbis 11.1 64Kbps/stereo)",
-        "uri": "https://hear360.co/SONAMI/Expendables34.mkv",
-        "extension": "mkv"
+        "name": "Baby Driver (11.1 PCM)",
+        "uri": "http://192.168.86.146:8080/BabyDriver.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.4,
+        "gainHPSOff": 1.125
       },
       {
-        "name": "Minion (11.1)",
-        "uri": "https://hear360.co/SONAMI/Minion.mkv",
-        "extension": "mkv"
+        "name": "Bruce Springsteen \"Mansion On The Hill\" (5.1)",
+        "uri": "http://192.168.86.146:8080/Mansion.mkv",
+        "extension": "mkv",
+        "channelsMask": 31,
+        "gainHPSOn": 0.5,
+        "gainHPSOff": 0.5
+      },
+      {
+        "name": "Come Together (5.1)",
+        "uri": "http://192.168.86.146:8080/ComeTogether.mkv",
+        "extension": "mkv",
+        "channelsMask": 31,
+        "gainHPSOn": 1.0,
+        "gainHPSOff": 1.0
       }
     ]
   }

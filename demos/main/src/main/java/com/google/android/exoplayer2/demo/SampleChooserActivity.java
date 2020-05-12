@@ -211,6 +211,14 @@ public class SampleChooserActivity extends AppCompatActivity
             : PlayerActivity.ABR_ALGORITHM_DEFAULT;
     intent.putExtra(PlayerActivity.ABR_ALGORITHM_EXTRA, abrAlgorithm);
     intent.putExtra(PlayerActivity.TUNNELING_EXTRA, isNonNullAndChecked(tunnelingMenuItem));
+
+    //SONAMI related extras
+
+    UriSample uriSample = (UriSample)sample;
+    intent.putExtra(PlayerActivity.CHANNELS_MASK_EXTRA, uriSample.channelsMask);
+    intent.putExtra(PlayerActivity.GAIN_HPS_ON, uriSample.gainHPSOn);
+    intent.putExtra(PlayerActivity.GAIN_HPS_OFF, uriSample.gainHPSOff);
+
     sample.addToIntent(intent);
     startActivity(intent);
     return true;
@@ -335,6 +343,9 @@ public class SampleChooserActivity extends AppCompatActivity
       String sampleName = null;
       Uri uri = null;
       String extension = null;
+      int channelsMask = 0;
+      double gainHPSOn = 1.0;
+      double gainHPSOff = 1.0;
       boolean isLive = false;
       String drmScheme = null;
       String drmLicenseUrl = null;
@@ -360,6 +371,15 @@ public class SampleChooserActivity extends AppCompatActivity
             break;
           case "extension":
             extension = reader.nextString();
+            break;
+          case "channelsMask":
+            channelsMask = reader.nextInt();
+            break;
+          case "gainHPSOn":
+            gainHPSOn = reader.nextDouble();
+            break;
+          case "gainHPSOff":
+            gainHPSOff = reader.nextDouble();
             break;
           case "drm_scheme":
             drmScheme = reader.nextString();
@@ -442,7 +462,10 @@ public class SampleChooserActivity extends AppCompatActivity
             drmInfo,
             adTagUri != null ? Uri.parse(adTagUri) : null,
             sphericalStereoMode,
-            subtitleInfo);
+            subtitleInfo,
+                channelsMask,
+                gainHPSOn,
+                gainHPSOff);
       }
     }
 

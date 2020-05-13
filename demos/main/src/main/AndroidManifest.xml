@@ -39,7 +39,7 @@
       android:name=".DemoApplication"
 
       tools:ignore="UnusedAttribute">
-pa
+
     <activity android:name=".SampleChooserActivity"
         android:configChanges="keyboardHidden"
         android:label="@string/application_name"

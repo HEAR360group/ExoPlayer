@@ -20,6 +20,7 @@ import android.content.pm.PackageManager;
 import android.media.MediaDrm;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Pair;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -289,7 +290,9 @@ public class PlayerActivity extends AppCompatActivity
     gainHPSOn = intent.getDoubleExtra(GAIN_HPS_ON, 1.0);
     gainHPSOff = intent.getDoubleExtra(GAIN_HPS_OFF, 1.0);
 
-    HPSAudioProcessor.setGain((float)gainHPSOn, (float)gainHPSOff);
+    HPSAudioProcessor.setGain((float)gainHPSOn, (float)gainHPSOff, channelsMask);
+    HPSAudioProcessor.fade(HPSAudioProcessor.VolumeRamperType.Silent);
+    HPSAudioProcessor.fade(HPSAudioProcessor.VolumeRamperType.FadeIn);
   }
 
   @Override
@@ -405,7 +408,15 @@ public class PlayerActivity extends AppCompatActivity
       for (int i = 0; i < rbChannels.length; i++) {
         rbChannels[i].setChecked(false);
       }
-      HPSAudioProcessor.setSoloChannel(4095);
+
+      HPSAudioProcessor.fade(HPSAudioProcessor.VolumeRamperType.FadeOutThenIn);
+      new Handler().postDelayed(new Runnable() {
+        @Override
+        public void run() {
+          HPSAudioProcessor.setSoloChannel(4095);
+
+        }
+      }, 200); //Time in milisecond
     }
     else {
       int selectedSoloChannelId = 0;
@@ -417,7 +428,16 @@ public class PlayerActivity extends AppCompatActivity
           rbAllChannel.setChecked(false);
         }
       }
-      HPSAudioProcessor.setSoloChannel(1 << selectedSoloChannelId);
+
+      HPSAudioProcessor.fade(HPSAudioProcessor.VolumeRamperType.FadeOutThenIn);
+      final int fSelectedSoloChannelId = selectedSoloChannelId;
+      new Handler().postDelayed(new Runnable() {
+        @Override
+        public void run() {
+          HPSAudioProcessor.setSoloChannel(1 << fSelectedSoloChannelId);
+
+        }
+      }, 200); //Time in milisecond
     }
   }
 
@@ -435,7 +455,14 @@ public class PlayerActivity extends AppCompatActivity
         //layoutEQ.setVisibility(View.GONE);
       }
 
-      HPSAudioProcessor.gIsSonamiOn = isChecked;
+      HPSAudioProcessor.fade(HPSAudioProcessor.VolumeRamperType.FadeOutThenIn);
+      new Handler().postDelayed(new Runnable() {
+        @Override
+        public void run() {
+          HPSAudioProcessor.gIsSonamiOn = isChecked;
+
+        }
+      }, 200); //Time in milisecond
     }
     else if(buttonView == swChannels) {
       if(isChecked) {

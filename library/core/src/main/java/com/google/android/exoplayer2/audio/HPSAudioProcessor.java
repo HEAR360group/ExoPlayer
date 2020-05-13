@@ -91,11 +91,45 @@ import androidx.annotation.Nullable;
     }
   }
 
-  public static void setGain(float gainHPSOn, float gainHPSOff) {
-    soloToMixGainEffectOn = 25.0f * gainHPSOn / 3.0f;
-    allToMixGainEffectOn = 12.5f * gainHPSOn / 3.0f;
-    soloToMixGainEffectOff = 5.0f * gainHPSOff / 3.0f;
-    allToMixGainEffectOff = 2.5f * gainHPSOff / 3.0f;
+  public static void setGain(float gainHPSOn, float gainHPSOff, int hex) {
+    int channelCount = ChannelCountFromHex(hex) + 1;
+    soloToMixGainEffectOn = 25.0f / channelCount * gainHPSOn;
+    allToMixGainEffectOn = 12.5f / channelCount * gainHPSOn;
+    soloToMixGainEffectOff = 5.0f / channelCount * gainHPSOff;
+    allToMixGainEffectOff = 2.5f / channelCount * gainHPSOff;
+    return;
+  }
+
+  private static float kTransistingStep = 1.0f / 50;
+  private static float curFadeVolume = 0.0f;
+  private static VolumeRamperState curFadeState = VolumeRamperState.Idle;
+
+  public static enum VolumeRamperType {
+    Silent,
+    FadeIn,
+    FadeOutThenIn
+  }
+
+  public static enum VolumeRamperState {
+    Idle,
+    FadingIn,
+    FadingOutThenIn
+  }
+
+  public static void fade(VolumeRamperType type) {
+    switch(type) {
+      case FadeIn:
+        curFadeState = VolumeRamperState.FadingIn;
+        break;
+      case Silent:
+        curFadeVolume = 0.0f;
+        break;
+      case FadeOutThenIn:
+        curFadeState = VolumeRamperState.FadingOutThenIn;
+        break;
+      default:
+        break;
+    }
   }
 
   public HPSAudioProcessor() {
@@ -117,6 +151,8 @@ import androidx.annotation.Nullable;
     for(int i = 0; i < channelsEnabled.length; i++) {
       channelsEnabled[i] = true;
     }
+//    curFadeVolume = 0.0f;
+//    curFadeState = VolumeRamperState.Idle;
   }
 
   /**
@@ -182,8 +218,8 @@ import androidx.annotation.Nullable;
     ByteBuffer buffer = replaceOutputBuffer(outputSize);
 
     int fBufIndex = 0;
-//    int fBufEarthIndex = 0;
-//    int fBufSkyIndex = 0;
+    int fBufEarthIndex = 0;
+    int fBufSkyIndex = 0;
     while (position < limit) {
       short input = inputBuffer.getShort(position);
       float inputFloat = (float)input / 32767.0f;
@@ -292,8 +328,8 @@ import androidx.annotation.Nullable;
     }
 //      curPage = 0;
 //      fBufIndex = 0;
-      fBufEarthIndex = 0;
-      fBufSkyIndex = 0;
+//      fBufEarthIndex = 0;
+//      fBufSkyIndex = 0;
 //    }
 //    else {
 //      //Output buffers are stereo (2 channels)
@@ -306,14 +342,36 @@ import androidx.annotation.Nullable;
 //      }
 //    }
 
-    float gain = (gIsSonamiOn ? (isSoloOn ? soloToMixGainEffectOn: allToMixGainEffectOn) : (isSoloOn ? soloToMixGainEffectOff : allToMixGainEffectOff)) / channelCount;
+    float gain = (gIsSonamiOn ? (isSoloOn ? soloToMixGainEffectOn: allToMixGainEffectOn) : (isSoloOn ? soloToMixGainEffectOff : allToMixGainEffectOff)) / 2.0f;
+
+    switch (curFadeState) {
+      case FadingIn:
+        curFadeVolume += kTransistingStep;
+        if(curFadeVolume >= 1.0f) {
+          curFadeVolume = 1.0f;
+          curFadeState = VolumeRamperState.Idle;
+        }
+        break;
+      case FadingOutThenIn:
+        curFadeVolume -= kTransistingStep;
+        if(curFadeVolume <= 0.0f) {
+          curFadeVolume = 0.0f;
+          curFadeState = VolumeRamperState.FadingIn;
+        }
+        break;
+      default:
+        break;
+    }
 
     for(int i = 0; i < frameCount; i++) {
-      float l = (outputBufEarth[i * 2] + outputBufSky[i * 2]) * gain;
-      float r = (outputBufEarth[i * 2 + 1] + outputBufSky[i * 2 + 1]) * gain;
+      float l = (outputBufEarth[i * 2] + outputBufSky[i * 2]) * gain * curFadeVolume;
+      float r = (outputBufEarth[i * 2 + 1] + outputBufSky[i * 2 + 1]) * gain * curFadeVolume;
 
-      short inputFrontL = (short)(l * 32767.0f);
-      short inputFrontR = (short)(r * 32767.0f);
+      float fl = (l < -0.99f) ? -0.99f : ((l > 0.99f) ? 0.99f : l);
+      float fr = (r < -0.99f) ? -0.99f : ((r > 0.99f) ? 0.99f : r);
+
+      short inputFrontL = (short)(fl * 32767.0f);
+      short inputFrontR = (short)(fr * 32767.0f);
 
       //Write the mixed stereo to the first 2 channels as the output
       buffer.putShort(inputFrontL);
@@ -340,4 +398,16 @@ import androidx.annotation.Nullable;
 //    pendingOutputChannels = null;
 //  }
 
+  public static int ChannelCountFromHex(int hex) {
+    int result = 0;
+    int flag = 0x1;
+
+    for(int i = 0; i < 32; i++) {
+      if((flag & hex) != 0) {
+        result++;
+      }
+      flag = flag << 1;
+    }
+    return result;
+  }
 }

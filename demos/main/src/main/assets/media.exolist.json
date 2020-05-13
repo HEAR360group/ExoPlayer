@@ -49,6 +49,14 @@
         "channelsMask": 31,
         "gainHPSOn": 1.0,
         "gainHPSOff": 1.0
+      },
+      {
+        "name": "The Wall (11.1)",
+        "uri": "https://hear360.co/SONAMI/TheWalls.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.4,
+        "gainHPSOff": 1.4
       }
     ]
   },
@@ -102,6 +110,14 @@
         "channelsMask": 31,
         "gainHPSOn": 1.0,
         "gainHPSOff": 1.0
+      },
+      {
+        "name": "The Wall (11.1)",
+        "uri": "http://192.168.86.146:8080/TheWalls.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.4,
+        "gainHPSOff": 1.4
       }
     ]
   }

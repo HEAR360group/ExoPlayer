@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.exoplayer2.demo;
+package com.hear360.android.exoplayer2.demo;
 
 import android.app.Dialog;
 import android.content.DialogInterface;

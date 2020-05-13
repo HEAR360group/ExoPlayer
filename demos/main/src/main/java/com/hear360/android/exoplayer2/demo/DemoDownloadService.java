@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.exoplayer2.demo;
-
-import static com.google.android.exoplayer2.demo.DemoApplication.DOWNLOAD_NOTIFICATION_CHANNEL_ID;
+package com.hear360.android.exoplayer2.demo;
 
 import android.app.Notification;
 import android.content.Context;
@@ -38,7 +36,7 @@ public class DemoDownloadService extends DownloadService {
     super(
         FOREGROUND_NOTIFICATION_ID,
         DEFAULT_FOREGROUND_NOTIFICATION_UPDATE_INTERVAL,
-        DOWNLOAD_NOTIFICATION_CHANNEL_ID,
+        DemoApplication.DOWNLOAD_NOTIFICATION_CHANNEL_ID,
         R.string.exo_download_notification_channel_name,
         /* channelDescriptionResourceId= */ 0);
   }

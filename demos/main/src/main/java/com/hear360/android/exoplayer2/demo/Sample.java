@@ -13,21 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.exoplayer2.demo;
-
-import static com.google.android.exoplayer2.demo.PlayerActivity.ACTION_VIEW_LIST;
-import static com.google.android.exoplayer2.demo.PlayerActivity.AD_TAG_URI_EXTRA;
-import static com.google.android.exoplayer2.demo.PlayerActivity.DRM_KEY_REQUEST_PROPERTIES_EXTRA;
-import static com.google.android.exoplayer2.demo.PlayerActivity.DRM_LICENSE_URL_EXTRA;
-import static com.google.android.exoplayer2.demo.PlayerActivity.DRM_MULTI_SESSION_EXTRA;
-import static com.google.android.exoplayer2.demo.PlayerActivity.DRM_SCHEME_EXTRA;
-import static com.google.android.exoplayer2.demo.PlayerActivity.DRM_SCHEME_UUID_EXTRA;
-import static com.google.android.exoplayer2.demo.PlayerActivity.EXTENSION_EXTRA;
-import static com.google.android.exoplayer2.demo.PlayerActivity.IS_LIVE_EXTRA;
-import static com.google.android.exoplayer2.demo.PlayerActivity.SUBTITLE_LANGUAGE_EXTRA;
-import static com.google.android.exoplayer2.demo.PlayerActivity.SUBTITLE_MIME_TYPE_EXTRA;
-import static com.google.android.exoplayer2.demo.PlayerActivity.SUBTITLE_URI_EXTRA;
-import static com.google.android.exoplayer2.demo.PlayerActivity.URI_EXTRA;
+package com.hear360.android.exoplayer2.demo;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -42,10 +28,10 @@ import java.util.UUID;
   public static final class UriSample extends Sample {
 
     public static UriSample createFromIntent(Uri uri, Intent intent, String extrasKeySuffix) {
-      String extension = intent.getStringExtra(EXTENSION_EXTRA + extrasKeySuffix);
-      String adsTagUriString = intent.getStringExtra(AD_TAG_URI_EXTRA + extrasKeySuffix);
+      String extension = intent.getStringExtra(PlayerActivity.EXTENSION_EXTRA + extrasKeySuffix);
+      String adsTagUriString = intent.getStringExtra(PlayerActivity.AD_TAG_URI_EXTRA + extrasKeySuffix);
       boolean isLive =
-          intent.getBooleanExtra(IS_LIVE_EXTRA + extrasKeySuffix, /* defaultValue= */ false);
+          intent.getBooleanExtra(PlayerActivity.IS_LIVE_EXTRA + extrasKeySuffix, /* defaultValue= */ false);
       Uri adTagUri = adsTagUriString != null ? Uri.parse(adsTagUriString) : null;
       return new UriSample(
           /* name= */ null,
@@ -113,9 +99,9 @@ import java.util.UUID;
 
     private void addPlayerConfigToIntent(Intent intent, String extrasKeySuffix) {
       intent
-          .putExtra(EXTENSION_EXTRA + extrasKeySuffix, extension)
+          .putExtra(PlayerActivity.EXTENSION_EXTRA + extrasKeySuffix, extension)
           .putExtra(
-              AD_TAG_URI_EXTRA + extrasKeySuffix, adTagUri != null ? adTagUri.toString() : null);
+              PlayerActivity.AD_TAG_URI_EXTRA + extrasKeySuffix, adTagUri != null ? adTagUri.toString() : null);
       if (drmInfo != null) {
         drmInfo.addToIntent(intent, extrasKeySuffix);
       }
@@ -146,8 +132,8 @@ import java.util.UUID;
   public static final class DrmInfo {
 
     public static DrmInfo createFromIntent(Intent intent, String extrasKeySuffix) {
-      String schemeKey = DRM_SCHEME_EXTRA + extrasKeySuffix;
-      String schemeUuidKey = DRM_SCHEME_UUID_EXTRA + extrasKeySuffix;
+      String schemeKey = PlayerActivity.DRM_SCHEME_EXTRA + extrasKeySuffix;
+      String schemeUuidKey = PlayerActivity.DRM_SCHEME_UUID_EXTRA + extrasKeySuffix;
       if (!intent.hasExtra(schemeKey) && !intent.hasExtra(schemeUuidKey)) {
         return null;
       }
@@ -156,11 +142,11 @@ import java.util.UUID;
               ? intent.getStringExtra(schemeKey)
               : intent.getStringExtra(schemeUuidKey);
       UUID drmScheme = Util.getDrmUuid(drmSchemeExtra);
-      String drmLicenseUrl = intent.getStringExtra(DRM_LICENSE_URL_EXTRA + extrasKeySuffix);
+      String drmLicenseUrl = intent.getStringExtra(PlayerActivity.DRM_LICENSE_URL_EXTRA + extrasKeySuffix);
       String[] keyRequestPropertiesArray =
-          intent.getStringArrayExtra(DRM_KEY_REQUEST_PROPERTIES_EXTRA + extrasKeySuffix);
+          intent.getStringArrayExtra(PlayerActivity.DRM_KEY_REQUEST_PROPERTIES_EXTRA + extrasKeySuffix);
       boolean drmMultiSession =
-          intent.getBooleanExtra(DRM_MULTI_SESSION_EXTRA + extrasKeySuffix, false);
+          intent.getBooleanExtra(PlayerActivity.DRM_MULTI_SESSION_EXTRA + extrasKeySuffix, false);
       return new DrmInfo(drmScheme, drmLicenseUrl, keyRequestPropertiesArray, drmMultiSession);
     }
 
@@ -182,10 +168,10 @@ import java.util.UUID;
 
     public void addToIntent(Intent intent, String extrasKeySuffix) {
       Assertions.checkNotNull(intent);
-      intent.putExtra(DRM_SCHEME_EXTRA + extrasKeySuffix, drmScheme.toString());
-      intent.putExtra(DRM_LICENSE_URL_EXTRA + extrasKeySuffix, drmLicenseUrl);
-      intent.putExtra(DRM_KEY_REQUEST_PROPERTIES_EXTRA + extrasKeySuffix, drmKeyRequestProperties);
-      intent.putExtra(DRM_MULTI_SESSION_EXTRA + extrasKeySuffix, drmMultiSession);
+      intent.putExtra(PlayerActivity.DRM_SCHEME_EXTRA + extrasKeySuffix, drmScheme.toString());
+      intent.putExtra(PlayerActivity.DRM_LICENSE_URL_EXTRA + extrasKeySuffix, drmLicenseUrl);
+      intent.putExtra(PlayerActivity.DRM_KEY_REQUEST_PROPERTIES_EXTRA + extrasKeySuffix, drmKeyRequestProperties);
+      intent.putExtra(PlayerActivity.DRM_MULTI_SESSION_EXTRA + extrasKeySuffix, drmMultiSession);
     }
   }
 
@@ -193,13 +179,13 @@ import java.util.UUID;
 
     @Nullable
     public static SubtitleInfo createFromIntent(Intent intent, String extrasKeySuffix) {
-      if (!intent.hasExtra(SUBTITLE_URI_EXTRA + extrasKeySuffix)) {
+      if (!intent.hasExtra(PlayerActivity.SUBTITLE_URI_EXTRA + extrasKeySuffix)) {
         return null;
       }
       return new SubtitleInfo(
-          Uri.parse(intent.getStringExtra(SUBTITLE_URI_EXTRA + extrasKeySuffix)),
-          intent.getStringExtra(SUBTITLE_MIME_TYPE_EXTRA + extrasKeySuffix),
-          intent.getStringExtra(SUBTITLE_LANGUAGE_EXTRA + extrasKeySuffix));
+          Uri.parse(intent.getStringExtra(PlayerActivity.SUBTITLE_URI_EXTRA + extrasKeySuffix)),
+          intent.getStringExtra(PlayerActivity.SUBTITLE_MIME_TYPE_EXTRA + extrasKeySuffix),
+          intent.getStringExtra(PlayerActivity.SUBTITLE_LANGUAGE_EXTRA + extrasKeySuffix));
     }
 
     public final Uri uri;
@@ -213,18 +199,18 @@ import java.util.UUID;
     }
 
     public void addToIntent(Intent intent, String extrasKeySuffix) {
-      intent.putExtra(SUBTITLE_URI_EXTRA + extrasKeySuffix, uri.toString());
-      intent.putExtra(SUBTITLE_MIME_TYPE_EXTRA + extrasKeySuffix, mimeType);
-      intent.putExtra(SUBTITLE_LANGUAGE_EXTRA + extrasKeySuffix, language);
+      intent.putExtra(PlayerActivity.SUBTITLE_URI_EXTRA + extrasKeySuffix, uri.toString());
+      intent.putExtra(PlayerActivity.SUBTITLE_MIME_TYPE_EXTRA + extrasKeySuffix, mimeType);
+      intent.putExtra(PlayerActivity.SUBTITLE_LANGUAGE_EXTRA + extrasKeySuffix, language);
     }
   }
 
   public static Sample createFromIntent(Intent intent) {
-    if (ACTION_VIEW_LIST.equals(intent.getAction())) {
+    if (PlayerActivity.ACTION_VIEW_LIST.equals(intent.getAction())) {
       ArrayList<String> intentUris = new ArrayList<>();
       int index = 0;
-      while (intent.hasExtra(URI_EXTRA + "_" + index)) {
-        intentUris.add(intent.getStringExtra(URI_EXTRA + "_" + index));
+      while (intent.hasExtra(PlayerActivity.URI_EXTRA + "_" + index)) {
+        intentUris.add(intent.getStringExtra(PlayerActivity.URI_EXTRA + "_" + index));
         index++;
       }
       UriSample[] children = new UriSample[intentUris.size()];

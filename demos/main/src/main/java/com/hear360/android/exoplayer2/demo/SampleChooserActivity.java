@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.exoplayer2.demo;
+package com.hear360.android.exoplayer2.demo;
 
 import android.content.Context;
 import android.content.Intent;
@@ -40,9 +40,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.exoplayer2.ParserException;
 import com.google.android.exoplayer2.RenderersFactory;
-import com.google.android.exoplayer2.demo.Sample.DrmInfo;
-import com.google.android.exoplayer2.demo.Sample.PlaylistSample;
-import com.google.android.exoplayer2.demo.Sample.UriSample;
+import com.hear360.android.exoplayer2.demo.Sample.DrmInfo;
+import com.hear360.android.exoplayer2.demo.Sample.PlaylistSample;
+import com.hear360.android.exoplayer2.demo.Sample.UriSample;
 import com.google.android.exoplayer2.offline.DownloadService;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSourceInputStream;

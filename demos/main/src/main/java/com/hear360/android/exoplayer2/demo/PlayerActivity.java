@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.Group;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.C.ContentType;
@@ -163,7 +164,8 @@ public class PlayerActivity extends AppCompatActivity
   private Switch swEQ;
   private RadioButton[] rbChannels;
   private RadioButton rbAllChannel;
-  private ConstraintLayout layoutChannels;
+  private Group layoutChannels;
+  private Group layoutEQ;
 
   private DataSource.Factory dataSourceFactory;
   private SimpleExoPlayer player;
@@ -219,7 +221,8 @@ public class PlayerActivity extends AppCompatActivity
 
     channelsMask = intent.getIntExtra(CHANNELS_MASK_EXTRA, 0);
 
-    layoutChannels = findViewById(R.id.channels_control);
+    layoutChannels = findViewById(R.id.channels_control_group);
+    layoutEQ = findViewById(R.id.eq_control_group);
 
     rbChannels = new RadioButton[12];
     rbChannels[0] = findViewById(R.id.rbLChannel);
@@ -444,13 +447,13 @@ public class PlayerActivity extends AppCompatActivity
     if(buttonView == swSonami) {
       if(isChecked) {
 //        swChannels.setVisibility(View.VISIBLE);
-//        swEQ.setVisibility(View.VISIBLE);
+        swEQ.setVisibility(View.VISIBLE);
       }
       else {
 //        swChannels.setVisibility(View.GONE);
         swEQ.setVisibility(View.GONE);
 //        layoutChannels.setVisibility(View.GONE);
-        //layoutEQ.setVisibility(View.GONE);
+        layoutEQ.setVisibility(View.GONE);
       }
 
       HPSAudioProcessor.fade(HPSAudioProcessor.VolumeRamperType.FadeOutThenIn);
@@ -472,10 +475,10 @@ public class PlayerActivity extends AppCompatActivity
     }
     else if(buttonView == swEQ) {
       if(isChecked) {
-        //layoutEQ.setVisibility(View.VISIBLE);
+        layoutEQ.setVisibility(View.VISIBLE);
       }
       else {
-        //layoutEQ.setVisibility(View.GONE);
+        layoutEQ.setVisibility(View.GONE);
       }
     }
 //    else if(buttonView == swAllChannel) {

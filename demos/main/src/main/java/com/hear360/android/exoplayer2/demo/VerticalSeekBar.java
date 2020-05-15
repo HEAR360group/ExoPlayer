@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.widget.SeekBar;
 
 public class VerticalSeekBar extends androidx.appcompat.widget.AppCompatSeekBar {
+    private long lastTouchTime = 0;
 
     public VerticalSeekBar(Context context) {
         super(context);
@@ -46,13 +47,26 @@ public class VerticalSeekBar extends androidx.appcompat.widget.AppCompatSeekBar 
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_MOVE:
-            case MotionEvent.ACTION_UP:
-                int i=0;
-                i=getMax() - (int) (getMax() * event.getY() / getHeight());
+            case MotionEvent.ACTION_MOVE: {
+                int i = 0;
+                i = getMax() - (int) (getMax() * event.getY() / getHeight());
                 setProgress(i);
-                Log.i("Progress",getProgress()+"");
+                Log.i("Progress", getProgress() + "");
                 onSizeChanged(getWidth(), getHeight(), 0, 0);
+            }
+                break;
+            case MotionEvent.ACTION_UP: {
+                int i = 0;
+                if (System.currentTimeMillis() - lastTouchTime < 500) {
+                    i = getMax() / 2;
+                } else {
+                    i = getMax() - (int) (getMax() * event.getY() / getHeight());
+                }
+                setProgress(i);
+                Log.i("Progress", getProgress() + "");
+                onSizeChanged(getWidth(), getHeight(), 0, 0);
+                lastTouchTime = System.currentTimeMillis();
+            }
                 break;
 
             case MotionEvent.ACTION_CANCEL:

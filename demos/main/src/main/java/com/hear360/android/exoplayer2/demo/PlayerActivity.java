@@ -29,6 +29,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -94,7 +95,7 @@ import java.net.CookiePolicy;
 
 /** An activity that plays media using {@link SimpleExoPlayer}. */
 public class PlayerActivity extends AppCompatActivity
-    implements OnClickListener, CompoundButton.OnCheckedChangeListener, PlaybackPreparer, PlayerControlView.VisibilityListener {
+    implements OnClickListener, CompoundButton.OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener, PlaybackPreparer, PlayerControlView.VisibilityListener {
 
   // Activity extras.
 
@@ -162,6 +163,7 @@ public class PlayerActivity extends AppCompatActivity
   private Switch swSonami;
   private Switch swChannels;
   private Switch swEQ;
+  private VerticalSeekBar[] eqSliders;
   private RadioButton[] rbChannels;
   private RadioButton rbAllChannel;
   private Group layoutChannels;
@@ -251,7 +253,22 @@ public class PlayerActivity extends AppCompatActivity
     rbAllChannel = findViewById(R.id.rbAllChannel);
     rbAllChannel.setOnClickListener(this);
 
-    playerView = findViewById(R.id.player_view);
+    eqSliders = new VerticalSeekBar[10];
+    eqSliders[0] = findViewById(R.id.sldEQBand0);
+    eqSliders[1] = findViewById(R.id.sldEQBand1);
+    eqSliders[2] = findViewById(R.id.sldEQBand2);
+    eqSliders[3] = findViewById(R.id.sldEQBand3);
+    eqSliders[4] = findViewById(R.id.sldEQBand4);
+    eqSliders[5] = findViewById(R.id.sldEQBand5);
+    eqSliders[6] = findViewById(R.id.sldEQBand6);
+    eqSliders[7] = findViewById(R.id.sldEQBand7);
+    eqSliders[8] = findViewById(R.id.sldEQBand8);
+    eqSliders[9] = findViewById(R.id.sldEQBand9);
+    for(int i = 0; i < eqSliders.length; i++) {
+      eqSliders[i].setOnSeekBarChangeListener(this);
+    }
+
+      playerView = findViewById(R.id.player_view);
     playerView.setControllerVisibilityListener(this);
     playerView.setErrorMessageProvider(new PlayerErrorMessageProvider());
     playerView.requestFocus();
@@ -508,6 +525,26 @@ public class PlayerActivity extends AppCompatActivity
   }
 
   // PlaybackControlView.PlaybackPreparer implementation
+
+  @Override
+  public void onStopTrackingTouch(SeekBar seekBar) {
+    // TODO Auto-generated method stub
+  }
+
+  @Override
+  public void onStartTrackingTouch(SeekBar seekBar) {
+    // TODO Auto-generated method stub
+  }
+
+  @Override
+  public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
+    // TODO Auto-generated method stub
+    // To convert it as discrete value
+    float temp=progress;
+//    float dis=end-start;
+//    discrete=(start+((temp/100)*dis));
+
+  }
 
   @Override
   public void preparePlayback() {

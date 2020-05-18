@@ -30,14 +30,19 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.google.android.exoplayer2.ParserException;
 import com.google.android.exoplayer2.RenderersFactory;
 import com.hear360.android.exoplayer2.demo.Sample.DrmInfo;
@@ -61,7 +66,7 @@ import java.util.List;
 
 /** An activity for selecting from a list of media samples. */
 public class SampleChooserActivity extends AppCompatActivity
-    implements DownloadTracker.Listener, OnChildClickListener {
+        implements DownloadTracker.Listener, OnChildClickListener, OnClickListener, MenuItem.OnMenuItemClickListener {
 
   private static final String TAG = "SampleChooserActivity";
 
@@ -69,9 +74,16 @@ public class SampleChooserActivity extends AppCompatActivity
   private boolean useExtensionRenderers;
   private DownloadTracker downloadTracker;
   private SampleAdapter sampleAdapter;
-  private MenuItem preferExtensionDecodersMenuItem;
-  private MenuItem randomAbrMenuItem;
-  private MenuItem tunnelingMenuItem;
+//  private MenuItem preferExtensionDecodersMenuItem;
+//  private MenuItem randomAbrMenuItem;
+//  private MenuItem tunnelingMenuItem;
+
+  private MenuItem contactMenuItem;
+
+  private Button btnStart;
+  private Button btnClose;
+  private ConstraintLayout layoutSplash;
+  private ConstraintLayout layoutContact;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -81,6 +93,17 @@ public class SampleChooserActivity extends AppCompatActivity
     ExpandableListView sampleListView = findViewById(R.id.sample_list);
     sampleListView.setAdapter(sampleAdapter);
     sampleListView.setOnChildClickListener(this);
+
+    btnStart = findViewById(R.id.btn_start);
+    btnStart.setOnClickListener(this);
+
+    btnClose = findViewById(R.id.btn_close);
+    btnClose.setOnClickListener(this);
+
+    layoutSplash = findViewById(R.id.layout_splash);
+    layoutContact = findViewById(R.id.layout_contact);
+
+    this.getSupportActionBar().hide();
 
     Intent intent = getIntent();
     String dataUri = intent.getDataString();
@@ -123,14 +146,16 @@ public class SampleChooserActivity extends AppCompatActivity
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.sample_chooser_menu, menu);
-    preferExtensionDecodersMenuItem = menu.findItem(R.id.prefer_extension_decoders);
-    preferExtensionDecodersMenuItem.setVisible(useExtensionRenderers);
-    randomAbrMenuItem = menu.findItem(R.id.random_abr);
-    tunnelingMenuItem = menu.findItem(R.id.tunneling);
-    if (Util.SDK_INT < 21) {
-      tunnelingMenuItem.setEnabled(false);
-    }
+    inflater.inflate(R.menu.sample_chooser_hear360_menu, menu);
+    contactMenuItem = menu.findItem(R.id.prefer_contact);
+    contactMenuItem.setOnMenuItemClickListener(this);
+//    preferExtensionDecodersMenuItem = menu.findItem(R.id.prefer_extension_decoders);
+//    preferExtensionDecodersMenuItem.setVisible(useExtensionRenderers);
+//    randomAbrMenuItem = menu.findItem(R.id.random_abr);
+//    tunnelingMenuItem = menu.findItem(R.id.tunneling);
+//    if (Util.SDK_INT < 21) {
+//      tunnelingMenuItem.setEnabled(false);
+//    }
     return true;
   }
 
@@ -203,14 +228,19 @@ public class SampleChooserActivity extends AppCompatActivity
     Sample sample = (Sample) view.getTag();
     Intent intent = new Intent(this, PlayerActivity.class);
     intent.putExtra(
-        PlayerActivity.PREFER_EXTENSION_DECODERS_EXTRA,
-        isNonNullAndChecked(preferExtensionDecodersMenuItem));
-    String abrAlgorithm =
-        isNonNullAndChecked(randomAbrMenuItem)
-            ? PlayerActivity.ABR_ALGORITHM_RANDOM
-            : PlayerActivity.ABR_ALGORITHM_DEFAULT;
+            PlayerActivity.PREFER_EXTENSION_DECODERS_EXTRA,
+            false);
+//    intent.putExtra(
+//        PlayerActivity.PREFER_EXTENSION_DECODERS_EXTRA,
+//        isNonNullAndChecked(preferExtensionDecodersMenuItem));
+    String abrAlgorithm = PlayerActivity.ABR_ALGORITHM_DEFAULT;
+//    String abrAlgorithm =
+//        isNonNullAndChecked(randomAbrMenuItem)
+//            ? PlayerActivity.ABR_ALGORITHM_RANDOM
+//            : PlayerActivity.ABR_ALGORITHM_DEFAULT;
     intent.putExtra(PlayerActivity.ABR_ALGORITHM_EXTRA, abrAlgorithm);
-    intent.putExtra(PlayerActivity.TUNNELING_EXTRA, isNonNullAndChecked(tunnelingMenuItem));
+    intent.putExtra(PlayerActivity.TUNNELING_EXTRA, false);
+//    intent.putExtra(PlayerActivity.TUNNELING_EXTRA, isNonNullAndChecked(tunnelingMenuItem));
 
     //SONAMI related extras
 
@@ -232,8 +262,11 @@ public class SampleChooserActivity extends AppCompatActivity
     } else {
       UriSample uriSample = (UriSample) sample;
       RenderersFactory renderersFactory =
-          ((DemoApplication) getApplication())
-              .buildRenderersFactory(isNonNullAndChecked(preferExtensionDecodersMenuItem));
+              ((DemoApplication) getApplication())
+                      .buildRenderersFactory(true);
+//      RenderersFactory renderersFactory =
+//          ((DemoApplication) getApplication())
+//              .buildRenderersFactory(isNonNullAndChecked(preferExtensionDecodersMenuItem));
       downloadTracker.toggleDownload(
           getSupportFragmentManager(),
           sample.name,
@@ -267,6 +300,27 @@ public class SampleChooserActivity extends AppCompatActivity
   private static boolean isNonNullAndChecked(@Nullable MenuItem menuItem) {
     // Temporary workaround for layouts that do not inflate the options menu.
     return menuItem != null && menuItem.isChecked();
+  }
+
+  @Override
+  public void onClick(View v) {
+    if(v == btnStart) {
+      layoutSplash.setVisibility(View.GONE);
+      this.getSupportActionBar().show();
+    }
+    else if(v == btnClose) {
+      layoutContact.setVisibility(View.GONE);
+      this.getSupportActionBar().show();
+    }
+  }
+
+  @Override
+  public boolean onMenuItemClick(MenuItem item) {
+    if(item == contactMenuItem) {
+      layoutContact.setVisibility(View.VISIBLE);
+      this.getSupportActionBar().hide();
+    }
+    return false;
   }
 
   private final class SampleListLoader extends AsyncTask<String, Void, List<SampleGroup>> {

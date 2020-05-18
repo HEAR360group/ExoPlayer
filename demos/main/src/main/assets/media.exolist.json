@@ -11,6 +11,22 @@
         "gainHPSOff": 1.07
       },
       {
+        "name": "Mad Max: Fury Road (11.1 Vorbis High)",
+        "uri": "https://hear360.co/SONAMI/MadMax2.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.14,
+        "gainHPSOff": 1.07
+      },
+      {
+        "name": "Mad Max: Fury Road (11.1 Vorbis Low)",
+        "uri": "https://hear360.co/SONAMI/MadMax3.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.14,
+        "gainHPSOff": 1.07
+      },
+      {
         "name": "Batman: The Dark Knight Rises (5.1 PCM)",
         "uri": "https://hear360.co/SONAMI/DarkKnight.mkv",
         "extension": "mkv",
@@ -19,7 +35,7 @@
         "gainHPSOff": 1.0
       },
       {
-        "name": "Apex Legends (7.1)",
+        "name": "Apex Legends (7.1 PCM)",
         "uri": "https://hear360.co/SONAMI/ApexLegends.mkv",
         "extension": "mkv",
         "channelsMask": 127,
@@ -35,7 +51,23 @@
         "gainHPSOff": 1.125
       },
       {
-        "name": "Bruce Springsteen \"Mansion On The Hill\" (5.1)",
+        "name": "Baby Driver (11.1 Vorbis High)",
+        "uri": "https://hear360.co/SONAMI/BabyDriver2.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.4,
+        "gainHPSOff": 1.125
+      },
+      {
+        "name": "Baby Driver (11.1 Vorbis Low)",
+        "uri": "https://hear360.co/SONAMI/BabyDriver3.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.4,
+        "gainHPSOff": 1.125
+      },
+      {
+        "name": "Bruce Springsteen \"Mansion On The Hill\" (5.1 PCM)",
         "uri": "https://hear360.co/SONAMI/Mansion.mkv",
         "extension": "mkv",
         "channelsMask": 31,
@@ -43,7 +75,7 @@
         "gainHPSOff": 0.5
       },
       {
-        "name": "Come Together (5.1)",
+        "name": "Come Together (5.1 PCM)",
         "uri": "https://hear360.co/SONAMI/ComeTogether.mkv",
         "extension": "mkv",
         "channelsMask": 31,
@@ -51,8 +83,24 @@
         "gainHPSOff": 1.0
       },
       {
-        "name": "The Wall (11.1)",
+        "name": "The Wall (11.1 PCM)",
         "uri": "https://hear360.co/SONAMI/TheWalls.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.4,
+        "gainHPSOff": 1.4
+      },
+      {
+        "name": "The Wall (11.1 Vorbis High)",
+        "uri": "https://hear360.co/SONAMI/TheWalls2.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.4,
+        "gainHPSOff": 1.4
+      },
+      {
+        "name": "The Wall (11.1 Vorbis Low)",
+        "uri": "https://hear360.co/SONAMI/TheWalls3.mkv",
         "extension": "mkv",
         "channelsMask": 2047,
         "gainHPSOn": 1.4,
@@ -72,6 +120,22 @@
         "gainHPSOff": 1.07
       },
       {
+        "name": "Mad Max: Fury Road (11.1 Vorbis High)",
+        "uri": "http://192.168.86.146:8080/MadMax2.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.14,
+        "gainHPSOff": 1.07
+      },
+      {
+        "name": "Mad Max: Fury Road (11.1 Vorbis Low)",
+        "uri": "http://192.168.86.146:8080/MadMax3.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.14,
+        "gainHPSOff": 1.07
+      },
+      {
         "name": "Batman: The Dark Knight Rises (5.1 PCM)",
         "uri": "http://192.168.86.146:8080/DarkKnight.mkv",
         "extension": "mkv",
@@ -80,7 +144,7 @@
         "gainHPSOff": 1.0
       },
       {
-        "name": "Apex Legends (7.1)",
+        "name": "Apex Legends (7.1 PCM)",
         "uri": "http://192.168.86.146:8080/ApexLegends.mkv",
         "extension": "mkv",
         "channelsMask": 127,
@@ -96,7 +160,23 @@
         "gainHPSOff": 1.125
       },
       {
-        "name": "Bruce Springsteen \"Mansion On The Hill\" (5.1)",
+        "name": "Baby Driver (11.1 Vorbis High)",
+        "uri": "http://192.168.86.146:8080/BabyDriver2.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.4,
+        "gainHPSOff": 1.125
+      },
+      {
+        "name": "Baby Driver (11.1 Vorbis Low)",
+        "uri": "http://192.168.86.146:8080/BabyDriver3.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.4,
+        "gainHPSOff": 1.125
+      },
+      {
+        "name": "Bruce Springsteen \"Mansion On The Hill\" (5.1 PCM)",
         "uri": "http://192.168.86.146:8080/Mansion.mkv",
         "extension": "mkv",
         "channelsMask": 31,
@@ -104,7 +184,7 @@
         "gainHPSOff": 0.5
       },
       {
-        "name": "Come Together (5.1)",
+        "name": "Come Together (5.1 PCM)",
         "uri": "http://192.168.86.146:8080/ComeTogether.mkv",
         "extension": "mkv",
         "channelsMask": 31,
@@ -112,8 +192,24 @@
         "gainHPSOff": 1.0
       },
       {
-        "name": "The Wall (11.1)",
+        "name": "The Wall (11.1 PCM)",
         "uri": "http://192.168.86.146:8080/TheWalls.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.4,
+        "gainHPSOff": 1.4
+      },
+      {
+        "name": "The Wall (11.1 Vorbis High)",
+        "uri": "http://192.168.86.146:8080/TheWalls2.mkv",
+        "extension": "mkv",
+        "channelsMask": 2047,
+        "gainHPSOn": 1.4,
+        "gainHPSOff": 1.4
+      },
+      {
+        "name": "The Wall (11.1 Vorbis Low)",
+        "uri": "http://192.168.86.146:8080/TheWalls3.mkv",
         "extension": "mkv",
         "channelsMask": 2047,
         "gainHPSOn": 1.4,

@@ -357,6 +357,9 @@ public class PlayerActivity extends AppCompatActivity
     reloadAllBandEQs();
 
     lstEQPicker.setOnItemSelectedListener(this);
+
+    int index = eqNames.indexOf("Flat");
+    lstEQPicker.setSelection(index);
   }
 
   public void reloadAllBandEQs() {

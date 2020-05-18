@@ -50,9 +50,9 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE    := libckfft_android
 #ifeq ($(APP_ABI),arm64-v8a)
-	LOCAL_SRC_FILES := libs/arm64-v8a/libckfft.a
+	# LOCAL_SRC_FILES := libs/arm64-v8a/libckfft.a
 #else ifeq ($(APP_ABI),armeabi-v7a)
-	# LOCAL_SRC_FILES := libs/armeabi-v7a/libckfft.a
+	LOCAL_SRC_FILES := libs/armeabi-v7a/libckfft.a
 #endif
 
 #########################################################################################################################

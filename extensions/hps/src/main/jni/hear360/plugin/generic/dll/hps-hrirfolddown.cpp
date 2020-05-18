@@ -148,6 +148,11 @@ extern "C"
     return (hear360_plugin_generic_dsp_stereoeq::ProcessInPlace(handle, pBuf, totalsamples) ? 1 : 0);
   }
 
+  F_DECLSPEC F_DLLEXPORT int HPS_12BandEQ_ProcessInPlaceInterleaved(HPS_12BandEQ_Instance_Handle handle, float* pBuf, long totalsamples)
+  {
+    return (hear360_plugin_generic_dsp_stereoeq::ProcessInPlaceInterleaved(handle, pBuf, totalsamples) ? 1 : 0);
+  }
+
   F_DECLSPEC F_DLLEXPORT int HPS_12BandEQ_Update(HPS_12BandEQ_Instance_Handle handle, const float* eqF, const float* eqG, const float* eqQ)
   {
     return (hear360_plugin_generic_dsp_stereoeq::Update(handle, eqF, eqG, eqQ) ? 1 : 0);

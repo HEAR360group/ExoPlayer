@@ -82,6 +82,8 @@ extern "C"
 
   F_DECLSPEC F_DLLEXPORT int HPS_12BandEQ_ProcessInPlace(HPS_12BandEQ_Instance_Handle handle, float** pBuf, long totalsamples);
 
+  F_DECLSPEC F_DLLEXPORT int HPS_12BandEQ_ProcessInPlaceInterleaved(HPS_12BandEQ_Instance_Handle handle, float* pBuf, long totalsamples);
+
   F_DECLSPEC F_DLLEXPORT int HPS_12BandEQ_Update(HPS_12BandEQ_Instance_Handle handle, const float* eqF, const float* eqG, const float* eqQ);
 
 #ifdef __cplusplus

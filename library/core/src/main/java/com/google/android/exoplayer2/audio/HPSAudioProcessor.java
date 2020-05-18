@@ -17,6 +17,7 @@ package com.google.android.exoplayer2.audio;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.ext.hps.EQAudioDSP;
 import com.google.android.exoplayer2.ext.hps.HPSAudioDSP;
 import com.google.android.exoplayer2.ext.hps.HPSLibrary;
 
@@ -42,6 +43,7 @@ import androidx.annotation.Nullable;
   private HPSLibrary hpsLibrary;
   private HPSAudioDSP hpsAudioDSPEarth;
   private HPSAudioDSP hpsAudioDSPSky;
+  private EQAudioDSP eq;
 
   private int encoding;
   private ByteBuffer buffer;
@@ -50,6 +52,7 @@ import androidx.annotation.Nullable;
   private float[] inputBufSky;
   private float[] outputBufEarth;
   private float[] outputBufSky;
+  private float[] masterBuf;
 
   //  private int fBufIndex = 0;
   private int fBufEarthIndex = 0;
@@ -132,6 +135,23 @@ import androidx.annotation.Nullable;
     }
   }
 
+  //Greg's measurements
+  private static final float mEQQ[] = {.615f, .5996f, .613f, .645f, .604f, .619f, .559f, .664f, .592f, .348f, 0.9f, 0.9f};
+  private static final float mEQF[] = {31.0f, 63.0f, 125.0f, 250.0f, 500.0f, 1000.0f, 2000.0f, 4000.0f, 8000.0f, 16000.0f, 16000.0f, 16000.0f};
+  private static float mEQG[] = new float[12];
+
+  private static boolean eqChanged = false;
+
+  public static void setEQ(float[] eqG) {
+    for(int i = 0; i < 10; i++) {
+      mEQG[i] = eqG[i];
+    }
+    mEQG[10] = 0.0f;
+    mEQG[11] = 0.0f;
+
+    eqChanged = true;
+  }
+
   public HPSAudioProcessor() {
     boolean result = hpsLibrary.isAvailable();
 
@@ -145,6 +165,7 @@ import androidx.annotation.Nullable;
     inputBufSky = new float[10000];
     outputBufEarth = new float[10000];
     outputBufSky = new float[10000];
+    masterBuf = new float[10000];
 
     //Reset global state
     gIsSonamiOn = false;
@@ -194,6 +215,7 @@ import androidx.annotation.Nullable;
       active = true;
       hpsAudioDSPEarth = new HPSAudioDSP(sampleRateHz, 0);
       hpsAudioDSPSky = new HPSAudioDSP(sampleRateHz, 100);
+      eq = new EQAudioDSP(sampleRateHz);
     }
 
 //    return AudioFormat.NOT_SET;
@@ -363,9 +385,22 @@ import androidx.annotation.Nullable;
         break;
     }
 
+    for(int i = 0; i < frameCount * 2; i++) {
+      masterBuf[i] = outputBufEarth[i] + outputBufSky[i];
+    }
+
+    if(gIsSonamiOn) {
+      if(eqChanged) {
+        eq.Update(mEQF, mEQG, mEQQ);
+        eqChanged = false;
+      }
+
+      eq.ProcessInPlaceInterleavedFloat(masterBuf, frameCount);
+    }
+
     for(int i = 0; i < frameCount; i++) {
-      float l = (outputBufEarth[i * 2] + outputBufSky[i * 2]) * gain * curFadeVolume;
-      float r = (outputBufEarth[i * 2 + 1] + outputBufSky[i * 2 + 1]) * gain * curFadeVolume;
+      float l = masterBuf[i * 2] * gain * curFadeVolume;
+      float r = masterBuf[i * 2 + 1] * gain * curFadeVolume;
 
       float fl = (l < -0.99f) ? -0.99f : ((l > 0.99f) ? 0.99f : l);
       float fr = (r < -0.99f) ? -0.99f : ((r > 0.99f) ? 0.99f : r);

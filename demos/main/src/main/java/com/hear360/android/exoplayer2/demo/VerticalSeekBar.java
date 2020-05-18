@@ -75,4 +75,8 @@ public class VerticalSeekBar extends androidx.appcompat.widget.AppCompatSeekBar 
         return true;
     }
 
+    public void updateThumb()
+    {
+        onSizeChanged(getWidth(), getHeight(), 0, 0);
+    }
 }

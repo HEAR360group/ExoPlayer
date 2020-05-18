@@ -15,21 +15,31 @@
  */
 package com.hear360.android.exoplayer2.demo;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaDrm;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Pair;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -88,14 +98,20 @@ import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.ErrorMessageProvider;
 import com.google.android.exoplayer2.util.EventLogger;
 import com.google.android.exoplayer2.util.Util;
+
+import org.w3c.dom.Text;
+
 import java.lang.reflect.Constructor;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /** An activity that plays media using {@link SimpleExoPlayer}. */
 public class PlayerActivity extends AppCompatActivity
-    implements OnClickListener, CompoundButton.OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener, PlaybackPreparer, PlayerControlView.VisibilityListener {
+        implements OnClickListener, CompoundButton.OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener, PlaybackPreparer, PlayerControlView.VisibilityListener, AdapterView.OnItemSelectedListener {
 
   // Activity extras.
 
@@ -164,10 +180,13 @@ public class PlayerActivity extends AppCompatActivity
   private Switch swChannels;
   private Switch swEQ;
   private VerticalSeekBar[] eqSliders;
+  private TextView[] lblEQs;
   private RadioButton[] rbChannels;
   private RadioButton rbAllChannel;
   private Group layoutChannels;
   private Group layoutEQ;
+  private Spinner lstEQPicker;
+  private Button btnSaveEQ;
 
   private DataSource.Factory dataSourceFactory;
   private SimpleExoPlayer player;
@@ -190,6 +209,9 @@ public class PlayerActivity extends AppCompatActivity
   private int channelsMask;
   private double gainHPSOn;
   private double gainHPSOff;
+  private float[] eqBands;
+  HashMap<String, float[]> allEQs;
+  List<String> eqNames;
 
   // Activity lifecycle
 
@@ -268,7 +290,27 @@ public class PlayerActivity extends AppCompatActivity
       eqSliders[i].setOnSeekBarChangeListener(this);
     }
 
-      playerView = findViewById(R.id.player_view);
+    lblEQs = new TextView[10];
+    lblEQs[0] = findViewById(R.id.lblEQBand0);
+    lblEQs[1] = findViewById(R.id.lblEQBand1);
+    lblEQs[2] = findViewById(R.id.lblEQBand2);
+    lblEQs[3] = findViewById(R.id.lblEQBand3);
+    lblEQs[4] = findViewById(R.id.lblEQBand4);
+    lblEQs[5] = findViewById(R.id.lblEQBand5);
+    lblEQs[6] = findViewById(R.id.lblEQBand6);
+    lblEQs[7] = findViewById(R.id.lblEQBand7);
+    lblEQs[8] = findViewById(R.id.lblEQBand8);
+    lblEQs[9] = findViewById(R.id.lblEQBand9);
+
+    lstEQPicker = findViewById(R.id.lstEQPicker);
+    btnSaveEQ = findViewById(R.id.btnSaveEQ);
+    btnSaveEQ.setOnClickListener(this);
+
+    eqBands = new float[10];
+    allEQs = new HashMap<>();
+    eqNames = new ArrayList<String>();
+
+    playerView = findViewById(R.id.player_view);
     playerView.setControllerVisibilityListener(this);
     playerView.setErrorMessageProvider(new PlayerErrorMessageProvider());
     playerView.requestFocus();
@@ -311,6 +353,22 @@ public class PlayerActivity extends AppCompatActivity
     HPSAudioProcessor.setGain((float)gainHPSOn, (float)gainHPSOff, channelsMask);
     HPSAudioProcessor.fade(HPSAudioProcessor.VolumeRamperType.Silent);
     HPSAudioProcessor.fade(HPSAudioProcessor.VolumeRamperType.FadeIn);
+
+    reloadAllBandEQs();
+
+    lstEQPicker.setOnItemSelectedListener(this);
+  }
+
+  public void reloadAllBandEQs() {
+    HashMap<String, float[]> dict = AppSettingsPreference.loadEQParameter(this);
+    allEQs.clear();
+    allEQs.putAll(dict);
+
+    eqNames.clear();
+    eqNames.addAll(allEQs.keySet());
+    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, eqNames);
+    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    lstEQPicker.setAdapter(dataAdapter);
   }
 
   @Override
@@ -407,6 +465,37 @@ public class PlayerActivity extends AppCompatActivity
     return playerView.dispatchKeyEvent(event) || super.dispatchKeyEvent(event);
   }
 
+  public void popupSaveEQDialog() {
+    final EditText input = new EditText(this);
+    input.setHint("EQ Preset Name");
+    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT);
+    input.setLayoutParams(lp);
+
+    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+    alertBuilder.setTitle("");
+    alertBuilder.setMessage("");
+    alertBuilder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+      public void onClick(DialogInterface dialog, int which) {
+        String name = input.getText().toString();
+        AppSettingsPreference.addEQParameter(PlayerActivity.this, name, eqBands);
+        reloadAllBandEQs();
+        int index = eqNames.indexOf(name);
+        lstEQPicker.setSelection(index);
+      }
+    });
+    alertBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+      public void onClick(DialogInterface dialog, int which) {
+
+      }
+    });
+
+
+    alertBuilder.setView(input);
+    alertBuilder.create().show();
+  }
+
   // OnClickListener methods
 
   @Override
@@ -435,6 +524,9 @@ public class PlayerActivity extends AppCompatActivity
 
         }
       }, 200); //Time in milisecond
+    }
+    else if(view == btnSaveEQ) {
+      popupSaveEQDialog();
     }
     else {
       int selectedSoloChannelId = 0;
@@ -496,6 +588,17 @@ public class PlayerActivity extends AppCompatActivity
       }
       else {
         layoutEQ.setVisibility(View.GONE);
+        //Debug saving parameters
+//        HashMap<String, float[]> fuck = new HashMap<>();
+////        float[] eqBands = new float[10];
+////        for(int i = 0; i < 10; i++) {
+////          eqBands[i] = Float.parseFloat(lblEQs[i].getText().toString());
+////        }
+//        fuck.put("fuck", eqBands);
+//        AppSettingsPreference.setEQParameter(this, fuck);
+//
+//        HashMap<String, float[]> fuck2 = AppSettingsPreference.loadEQParameter(this);
+//        return;
       }
     }
 //    else if(buttonView == swAllChannel) {
@@ -526,6 +629,15 @@ public class PlayerActivity extends AppCompatActivity
 
   // PlaybackControlView.PlaybackPreparer implementation
 
+  public void updateEQFromSliders() {
+    for(int i = 0; i < eqSliders.length; i++) {
+      float gain = (eqSliders[i].getProgress() - 100) / 10.0f;
+      lblEQs[i].setText(String.format("%.1fdB", gain));
+      eqBands[i] = gain;
+    }
+    HPSAudioProcessor.setEQ(eqBands);
+  }
+
   @Override
   public void onStopTrackingTouch(SeekBar seekBar) {
     // TODO Auto-generated method stub
@@ -538,12 +650,9 @@ public class PlayerActivity extends AppCompatActivity
 
   @Override
   public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
-    // TODO Auto-generated method stub
-    // To convert it as discrete value
-    float temp=progress;
-//    float dis=end-start;
-//    discrete=(start+((temp/100)*dis));
-
+//    if(fromUser) {
+      updateEQFromSliders();
+//    }
   }
 
   @Override
@@ -899,6 +1008,24 @@ public class PlayerActivity extends AppCompatActivity
       cause = cause.getCause();
     }
     return false;
+  }
+
+  @Override
+  public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+    String eqName = eqNames.get(position);
+    float[] eqBands = allEQs.get(eqName);
+    for(int i = 0; i < eqBands.length; i++) {
+      int progress = (int)(eqBands[i] * 10 + 100);
+      eqSliders[i].setProgress(progress);
+      eqSliders[i].updateThumb();
+    }
+
+    updateEQFromSliders();
+  }
+
+  @Override
+  public void onNothingSelected(AdapterView<?> parent) {
+    return;
   }
 
   private class PlayerEventListener implements Player.EventListener {

@@ -44,6 +44,16 @@ extern "C" {
     Java_com_google_android_exoplayer2_ext_hps_HPSAudioDSP_ ## NAME \
       (JNIEnv *env, jobject thiz, ##__VA_ARGS__)\
 
+#define EQ_FUNC(RETURN_TYPE, NAME, ...) \
+  extern "C" { \
+  JNIEXPORT RETURN_TYPE \
+    Java_com_google_android_exoplayer2_ext_hps_EQAudioDSP_ ## NAME \
+      (JNIEnv *env, jobject thiz, ##__VA_ARGS__);\
+  } \
+  JNIEXPORT RETURN_TYPE \
+    Java_com_google_android_exoplayer2_ext_hps_EQAudioDSP_ ## NAME \
+      (JNIEnv *env, jobject thiz, ##__VA_ARGS__)\
+
 #define ERROR_STRING_BUFFER_LENGTH 256
 
 /**
@@ -58,6 +68,75 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
   }
 
   return JNI_VERSION_1_6;
+}
+
+EQ_FUNC(jlong, Hear360EQCreateInstance, jint samplerate) {
+  return (jlong) HPS_12BandEQ_CreateInstance(samplerate);
+}
+
+EQ_FUNC(jint, Hear360EQDeleteInstance, jlong context) {
+  if (context) {
+    return HPS_12BandEQ_DeleteInstance((HPS_12BandEQ_Instance_Handle *) context);
+  }
+  else {
+    return 0;
+  }
+}
+
+EQ_FUNC(jint, Hear360EQProcessInPlaceInterleaved, jlong context, jfloatArray pBuf, jlong totalsamples) {
+  if (context) {
+    jfloat *pcBuf;
+    pcBuf = env->GetFloatArrayElements(pBuf, 0);
+
+    if(pcBuf == NULL) {
+      return 0;
+    }
+
+    jint result = HPS_12BandEQ_ProcessInPlaceInterleaved((HPS_12BandEQ_Instance_Handle *) context, pcBuf, (long)totalsamples);
+
+    env->ReleaseFloatArrayElements(pBuf, pcBuf, 0);
+
+    return result;
+  }
+  else {
+    return 0;
+  }
+}
+
+EQ_FUNC(jint, Hear360EQUpdate, jlong context, jfloatArray eqF, jfloatArray eqG, jfloatArray eqQ) {
+  if (context) {
+    jfloat *pcEQF;
+    pcEQF = env->GetFloatArrayElements(eqF, 0);
+
+    if(pcEQF == NULL) {
+      return 0;
+    }
+
+    jfloat *pcEQG;
+    pcEQG = env->GetFloatArrayElements(eqG, 0);
+
+    if(pcEQG == NULL) {
+      return 0;
+    }
+
+    jfloat *pcEQQ;
+    pcEQQ = env->GetFloatArrayElements(eqQ, 0);
+
+    if(pcEQQ == NULL) {
+      return 0;
+    }
+
+    jint result = HPS_12BandEQ_Update((HPS_12BandEQ_Instance_Handle *) context, pcEQF, pcEQG, pcEQQ);
+
+    env->ReleaseFloatArrayElements(eqF, pcEQF, 0);
+    env->ReleaseFloatArrayElements(eqG, pcEQG, 0);
+    env->ReleaseFloatArrayElements(eqQ, pcEQQ, 0);
+
+    return result;
+  }
+  else {
+    return 0;
+  }
 }
 
 HPS_FUNC(jlong, Hear360HPSCreateInstance, jint samplerate, jint presetID) {

@@ -73,4 +73,8 @@
 
   <string name="tunneling">Request multimedia tunneling</string>
 
+  <string name="please_wait_downloading_error">Please wait for downloading to be finished</string>
+
+  <string name="please_download_error">Please download before playing</string>
+
 </resources>

@@ -183,7 +183,7 @@ public class PlayerActivity extends AppCompatActivity
   private TextView[] lblEQs;
   private RadioButton[] rbChannels;
   private RadioButton rbAllChannel;
-  private Group layoutChannels;
+//  private Group layoutChannels;
   private Group layoutEQ;
   private Spinner lstEQPicker;
   private Button btnSaveEQ;
@@ -217,6 +217,11 @@ public class PlayerActivity extends AppCompatActivity
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
+//    View decorView = getWindow().getDecorView();
+//    int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE;
+//    decorView.setSystemUiVisibility(uiOptions);
+
+
     Intent intent = getIntent();
 //    trackSelector.getCurrentMappedTrackInfo().getRendererCount();
 
@@ -245,7 +250,7 @@ public class PlayerActivity extends AppCompatActivity
 
     channelsMask = intent.getIntExtra(CHANNELS_MASK_EXTRA, 0);
 
-    layoutChannels = findViewById(R.id.channels_control_group);
+//    layoutChannels = findViewById(R.id.channels_control_group);
     layoutEQ = findViewById(R.id.eq_control_group);
 
     rbChannels = new RadioButton[12];
@@ -262,18 +267,13 @@ public class PlayerActivity extends AppCompatActivity
     rbChannels[10] = findViewById(R.id.rbRshChannel);
     rbChannels[11] = findViewById(R.id.rbTChannel);
     for(int i = 0; i < rbChannels.length; i++) {
-      if((channelsMask & (1 << i)) != 0) {
-        rbChannels[i].setVisibility(View.VISIBLE);
-      }
-      else {
-        rbChannels[i].setVisibility(View.GONE);
-      }
-
       rbChannels[i].setOnClickListener(this);
     }
-//
+
     rbAllChannel = findViewById(R.id.rbAllChannel);
     rbAllChannel.setOnClickListener(this);
+
+    hideAllChannelButtons();
 
     eqSliders = new VerticalSeekBar[10];
     eqSliders[0] = findViewById(R.id.sldEQBand0);
@@ -360,6 +360,25 @@ public class PlayerActivity extends AppCompatActivity
 
     int index = eqNames.indexOf("Flat");
     lstEQPicker.setSelection(index);
+  }
+
+  public void showAllChannelButtons() {
+    for(int i = 0; i < rbChannels.length; i++) {
+      if((channelsMask & (1 << i)) != 0) {
+        rbChannels[i].setVisibility(View.VISIBLE);
+      }
+      else {
+        rbChannels[i].setVisibility(View.GONE);
+      }
+    }
+    rbAllChannel.setVisibility(View.VISIBLE);
+  }
+
+  public void hideAllChannelButtons() {
+    for(int i = 0; i < rbChannels.length; i++) {
+      rbChannels[i].setVisibility(View.GONE);
+    }
+    rbAllChannel.setVisibility(View.GONE);
   }
 
   public void reloadAllBandEQs() {
@@ -579,10 +598,13 @@ public class PlayerActivity extends AppCompatActivity
     }
     else if(buttonView == swChannels) {
       if(isChecked) {
-        layoutChannels.setVisibility(View.VISIBLE);
+//        layoutChannels.setVisibility(View.VISIBLE);
+        showAllChannelButtons();
+
       }
       else {
-        layoutChannels.setVisibility(View.GONE);
+//        layoutChannels.setVisibility(View.GONE);
+        hideAllChannelButtons();
       }
     }
     else if(buttonView == swEQ) {
@@ -668,6 +690,17 @@ public class PlayerActivity extends AppCompatActivity
   @Override
   public void onVisibilityChange(int visibility) {
     debugRootView.setVisibility(visibility);
+
+
+    View decorView = getWindow().getDecorView();
+//    int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+    //| View.SYSTEM_UI_FLAG_FULLSCREEN;
+    if(visibility == 0) {
+      decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+    }
+    else {
+      decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE);
+    }
   }
 
   // Internal methods

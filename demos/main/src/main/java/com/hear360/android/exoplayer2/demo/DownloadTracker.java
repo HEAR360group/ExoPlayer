@@ -85,6 +85,11 @@ public class DownloadTracker {
     return download != null && download.state != Download.STATE_FAILED;
   }
 
+  public boolean isReallyDownloaded(Uri uri) {
+    Download download = downloads.get(uri);
+    return download != null && download.state == Download.STATE_COMPLETED;
+  }
+
   public DownloadRequest getDownloadRequest(Uri uri) {
     Download download = downloads.get(uri);
     return download != null && download.state != Download.STATE_FAILED ? download.request : null;

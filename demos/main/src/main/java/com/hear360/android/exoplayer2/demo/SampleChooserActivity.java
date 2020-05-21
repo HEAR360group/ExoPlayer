@@ -103,7 +103,7 @@ public class SampleChooserActivity extends AppCompatActivity
     layoutSplash = findViewById(R.id.layout_splash);
     layoutContact = findViewById(R.id.layout_contact);
 
-    this.getSupportActionBar().hide();
+//    this.getSupportActionBar().hide();
 
     Intent intent = getIntent();
     String dataUri = intent.getDataString();
@@ -226,31 +226,45 @@ public class SampleChooserActivity extends AppCompatActivity
   public boolean onChildClick(
       ExpandableListView parent, View view, int groupPosition, int childPosition, long id) {
     Sample sample = (Sample) view.getTag();
-    Intent intent = new Intent(this, PlayerActivity.class);
-    intent.putExtra(
-            PlayerActivity.PREFER_EXTENSION_DECODERS_EXTRA,
-            false);
+    boolean canDownload = getDownloadUnsupportedStringId(sample) == 0;
+    boolean isDownloaded = canDownload && downloadTracker.isDownloaded(((UriSample) sample).uri);
+    boolean isReallyDownloaded = downloadTracker.isReallyDownloaded(((UriSample) sample).uri);
+
+    if(isDownloaded && isReallyDownloaded) {
+      Intent intent = new Intent(this, PlayerActivity.class);
+      intent.putExtra(
+              PlayerActivity.PREFER_EXTENSION_DECODERS_EXTRA,
+              false);
 //    intent.putExtra(
 //        PlayerActivity.PREFER_EXTENSION_DECODERS_EXTRA,
 //        isNonNullAndChecked(preferExtensionDecodersMenuItem));
-    String abrAlgorithm = PlayerActivity.ABR_ALGORITHM_DEFAULT;
+      String abrAlgorithm = PlayerActivity.ABR_ALGORITHM_DEFAULT;
 //    String abrAlgorithm =
 //        isNonNullAndChecked(randomAbrMenuItem)
 //            ? PlayerActivity.ABR_ALGORITHM_RANDOM
 //            : PlayerActivity.ABR_ALGORITHM_DEFAULT;
-    intent.putExtra(PlayerActivity.ABR_ALGORITHM_EXTRA, abrAlgorithm);
-    intent.putExtra(PlayerActivity.TUNNELING_EXTRA, false);
+      intent.putExtra(PlayerActivity.ABR_ALGORITHM_EXTRA, abrAlgorithm);
+      intent.putExtra(PlayerActivity.TUNNELING_EXTRA, false);
 //    intent.putExtra(PlayerActivity.TUNNELING_EXTRA, isNonNullAndChecked(tunnelingMenuItem));
 
-    //SONAMI related extras
+      //SONAMI related extras
 
-    UriSample uriSample = (UriSample)sample;
-    intent.putExtra(PlayerActivity.CHANNELS_MASK_EXTRA, uriSample.channelsMask);
-    intent.putExtra(PlayerActivity.GAIN_HPS_ON, uriSample.gainHPSOn);
-    intent.putExtra(PlayerActivity.GAIN_HPS_OFF, uriSample.gainHPSOff);
+      UriSample uriSample = (UriSample) sample;
+      intent.putExtra(PlayerActivity.CHANNELS_MASK_EXTRA, uriSample.channelsMask);
+      intent.putExtra(PlayerActivity.GAIN_HPS_ON, uriSample.gainHPSOn);
+      intent.putExtra(PlayerActivity.GAIN_HPS_OFF, uriSample.gainHPSOff);
 
-    sample.addToIntent(intent);
-    startActivity(intent);
+      sample.addToIntent(intent);
+      startActivity(intent);
+    }
+    else {
+      if(isDownloaded) {
+        Toast.makeText(this, R.string.please_wait_downloading_error, Toast.LENGTH_LONG).show();
+      }
+      else {
+        Toast.makeText(this, R.string.please_download_error, Toast.LENGTH_LONG).show();
+      }
+    }
     return true;
   }
 
@@ -309,6 +323,14 @@ public class SampleChooserActivity extends AppCompatActivity
       this.getSupportActionBar().show();
     }
     else if(v == btnClose) {
+      layoutContact.setVisibility(View.GONE);
+      this.getSupportActionBar().show();
+    }
+  }
+
+  @Override
+  public void onBackPressed() {
+    if(layoutContact.getVisibility() == View.VISIBLE) {
       layoutContact.setVisibility(View.GONE);
       this.getSupportActionBar().show();
     }

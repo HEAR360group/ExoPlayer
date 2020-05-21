@@ -20,6 +20,7 @@ import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.ext.hps.EQAudioDSP;
 import com.google.android.exoplayer2.ext.hps.HPSAudioDSP;
 import com.google.android.exoplayer2.ext.hps.HPSLibrary;
+import com.google.android.exoplayer2.util.Log;
 
 import java.nio.ByteBuffer;
 
@@ -103,7 +104,7 @@ import androidx.annotation.Nullable;
     return;
   }
 
-  private static float kTransistingStep = 1.0f / 50;
+  private static float kTransistingStep = 1.0f / 50 / 227;
   private static float curFadeVolume = 0.0f;
   private static VolumeRamperState curFadeState = VolumeRamperState.Idle;
 
@@ -364,18 +365,18 @@ import androidx.annotation.Nullable;
 //      }
 //    }
 
-    float gain = (gIsSonamiOn ? (isSoloOn ? soloToMixGainEffectOn: allToMixGainEffectOn) : (isSoloOn ? soloToMixGainEffectOff : allToMixGainEffectOff)) / 2.0f;
+    float gain = (gIsSonamiOn ? (isSoloOn ? soloToMixGainEffectOn: allToMixGainEffectOn) : (isSoloOn ? soloToMixGainEffectOff : allToMixGainEffectOff)) / 1.25f;
 
     switch (curFadeState) {
       case FadingIn:
-        curFadeVolume += kTransistingStep;
+        curFadeVolume += (kTransistingStep * frameCount);
         if(curFadeVolume >= 1.0f) {
           curFadeVolume = 1.0f;
           curFadeState = VolumeRamperState.Idle;
         }
         break;
       case FadingOutThenIn:
-        curFadeVolume -= kTransistingStep;
+        curFadeVolume -= (kTransistingStep * frameCount);
         if(curFadeVolume <= 0.0f) {
           curFadeVolume = 0.0f;
           curFadeState = VolumeRamperState.FadingIn;
@@ -402,8 +403,26 @@ import androidx.annotation.Nullable;
       float l = masterBuf[i * 2] * gain * curFadeVolume;
       float r = masterBuf[i * 2 + 1] * gain * curFadeVolume;
 
-      float fl = (l < -0.99f) ? -0.99f : ((l > 0.99f) ? 0.99f : l);
-      float fr = (r < -0.99f) ? -0.99f : ((r > 0.99f) ? 0.99f : r);
+//      float fl = l;
+//      float fr = r;
+//      if(fl < -0.999f) {
+//        Log.w("HPSAudioProcessor", "Popped L: " + fl);
+//        fl = -0.999f;
+//      }
+//      else if(fl > 0.999f) {
+//        Log.w("HPSAudioProcessor", "Popped L: " + fl);
+//        fl = 0.999f;
+//      }
+//      if(fr < -0.999f) {
+//        Log.w("HPSAudioProcessor", "Popped R: " + fr);
+//        fr = -0.999f;
+//      }
+//      else if(fr > 0.999f) {
+//        Log.w("HPSAudioProcessor", "Popped R: " + fr);
+//        fr = 0.999f;
+//      }
+      float fl = (l < -0.999f) ? -0.999f : ((l > 0.999f) ? 0.999f : l);
+      float fr = (r < -0.999f) ? -0.999f : ((r > 0.999f) ? 0.999f : r);
 
       short inputFrontL = (short)(fl * 32767.0f);
       short inputFrontR = (short)(fr * 32767.0f);

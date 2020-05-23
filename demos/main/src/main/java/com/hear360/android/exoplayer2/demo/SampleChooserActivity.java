@@ -103,7 +103,7 @@ public class SampleChooserActivity extends AppCompatActivity
     layoutSplash = findViewById(R.id.layout_splash);
     layoutContact = findViewById(R.id.layout_contact);
 
-//    this.getSupportActionBar().hide();
+    this.getSupportActionBar().hide();
 
     Intent intent = getIntent();
     String dataUri = intent.getDataString();

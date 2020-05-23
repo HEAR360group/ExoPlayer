@@ -59,7 +59,7 @@
       android:layout_weight="0"
       android:id="@+id/layout_splash"
       android:background="@android:color/black"
-      android:visibility="gone">
+      android:visibility="visible">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/top_guideline"

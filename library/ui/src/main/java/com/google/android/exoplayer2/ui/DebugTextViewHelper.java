@@ -165,8 +165,8 @@ public class DebugTextViewHelper implements Player.EventListener, Runnable {
         + format.sampleMimeType
         + "(id:"
         + format.id
-        + " hz:"
-        + format.sampleRate
+        + " br:"
+        + format.bitrate
         + " ch:"
         + format.channelCount
         + getDecoderCountersBufferCountString(decoderCounters)

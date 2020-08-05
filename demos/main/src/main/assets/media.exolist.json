@@ -3,8 +3,18 @@
     "name": "Hear360 Test Streams",
     "samples": [
       {
+        "name": "Hear360 Audio Test",
+        "uri": "http://167.172.119.125:1935/live/x/manifest.mpd",
+        "extension": "mpd"
+      },
+      {
         "name": "Local Test Stream",
         "uri": "http://192.168.86.146:1935/localtest/processed/test/manifest.mpd",
+        "extension": "mpd"
+      },
+      {
+        "name": "Local Test Stream with auth",
+        "uri": "http://192.168.86.146:1935/live/processed/test/manifest.mpd",
         "extension": "mpd"
       }
     ]
